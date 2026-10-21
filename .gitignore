@@ -5,3 +5,6 @@ gerador*.html
 *.xlsx
 _fonte_privada/
 .DS_Store
+
+Code.gs
+*.gs
