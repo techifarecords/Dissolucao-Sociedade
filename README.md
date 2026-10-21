@@ -13,7 +13,7 @@ então um perfil não consegue abrir o que não é dele, nem baixando os arquivo
 |---|---|
 | Administrador | Tudo + relatório de acessos (sessões e visualizações por pessoa) |
 | Advogado | Dívida pessoal, investimento IFÁ, carreira da Dhara, contratos e planilha completa |
-| Ana Carolina | Dívida pessoal e investimento IFÁ, com comprovantes e a planilha da apuração |
+| Ana Carolina | Só a dívida pessoal, com comprovantes e a planilha da dívida |
 | Dhara | Só o investimento na carreira dela, com comprovantes |
 
 ## Estrutura
@@ -38,6 +38,8 @@ Os acessos são gravados numa Planilha Google da Priscila por um Apps Script (`C
 fora do repositório porque contém os tokens). A URL do App da Web vai no gerador de acessos.
 
 ## Atualizar os números
+
+Os dados ficam em `r/d_*.bin`, fora do `index.html`. Atualizações de números não exigem gerar as senhas de novo; só mudanças no código do painel exigem.
 
 Quando a apuração muda, o pacote é regerado por inteiro (novos `.bin` + novo gerador).
 O gerador antigo não abre o pacote novo: gere e suba um `index.html` novo.
