@@ -1,0 +1,7 @@
+# Nunca versionar: a chave do painel e os dados em texto aberto
+gerador*.html
+*.py
+*.json
+*.xlsx
+_fonte_privada/
+.DS_Store
