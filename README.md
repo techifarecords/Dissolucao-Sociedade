@@ -13,7 +13,7 @@ válida, os arquivos deste repositório não revelam nenhum dado.
 | `index.html`, `404.html` | Redirecionam para o site institucional. Nenhum link aponta para o painel. |
 | `robots.txt` | Pede aos buscadores para não indexar nada. |
 
-O endereço do painel fica: `https://<subdomínio>/apuracao-82bedc0733/`
+O endereço do painel fica: `https://dissolucao.ifarecords.com.br/apuracao-82bedc0733/`
 
 ## Cadastrar ou trocar senhas
 
@@ -32,10 +32,10 @@ Substitua a pasta `apuracao-82bedc0733/r` e use o gerador novo — o antigo não
 ## Publicação (GitHub Pages + domínio IFÁ)
 
 1. *Settings → Pages*: Source = **Deploy from a branch**, Branch = `main`, pasta `/ (root)`.
-2. Em *Custom domain*, informe o subdomínio (ex.: `apuracao.ifarecords.com.br`) e salve.
+2. Em *Custom domain*, informe o subdomínio (ex.: `dissolucao.ifarecords.com.br`) e salve.
    Isso cria o arquivo `CNAME` na raiz.
 3. No DNS do domínio `ifarecords.com.br`, crie um registro **CNAME**:
-   `apuracao` → `techifarecords.github.io`
+   `dissolucao` → `techifarecords.github.io`
 4. Depois que o certificado sair, marque **Enforce HTTPS**.
 
 ## Segurança
