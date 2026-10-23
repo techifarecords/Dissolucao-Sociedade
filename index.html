@@ -194,6 +194,11 @@ body.locked .wrap{display:none}
 .ctmsg{font-size:13px;color:var(--muted)}.ctmsg.err{color:var(--debt,#b42318)}.ctmsg.ok{color:#1d6b3a;font-weight:500}
 .ctsent{display:grid;gap:8px;margin-top:14px;max-width:760px}.ctdone{display:grid;gap:2px;border:1px solid #cfe5d6;background:#f1f8f3;border-radius:10px;padding:10px 14px;font-size:13px}
 @media (max-width:560px){.ctrow{grid-template-columns:1fr}.ct .ctform{padding:16px}}
+.crhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px}.crhead h2{margin:0 0 4px}
+.crk{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:18px}
+.crc{border:1px solid var(--line);border-radius:10px;background:#fff;padding:12px 14px;display:grid;gap:4px}.crc b{font-size:20px}.crc small{color:var(--muted);font-size:12px}
+.crh{font-size:15px;margin:18px 0 8px}.crcm{max-width:320px;font-size:13px;white-space:pre-wrap}
+.cr .tbl td{vertical-align:top}
 .fbtn{font:inherit;font-size:13.5px;font-weight:500;padding:7px 12px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--navy);cursor:pointer;white-space:nowrap}.fbtn:hover{border-color:var(--navy)}.fbtn:focus-visible{outline:2px solid var(--navy);outline-offset:2px}#extra .tbl td{vertical-align:middle}
 </style>
 </head>
@@ -582,6 +587,64 @@ form.addEventListener('submit',async e=>{e.preventDefault();msg.className='ctmsg
 });
 })();
 
+/* ---------- resumo das contestações (perfis administradora e advogada) ---------- */
+(function(){
+if(!(D.scope&&D.scope.doc)||!D.contest_r)return;
+const U=(D.contest||{}).u||'';
+const nav=$('tabs');nav.hidden=false;
+const tb=el('button',{role:'tab',id:'t-cr','aria-selected':'false','aria-controls':'tab-cr',text:'Contestações recebidas'});nav.append(tb);
+const pane=el('div',{id:'tab-cr',role:'tabpanel',class:'cr',hidden:true});$('tab-dl').after(pane);
+TABS.contestacoes=['t-cr','tab-cr'];
+let loaded=false;
+tb.onclick=()=>{setTab('contestacoes');if(!loaded)load()};
+const money=v=>(v===''||v==null||isNaN(+v))?'—':brl(+v);
+const head=el('div',{class:'crhead'},el('div',{},el('h2',{text:'Contestações recebidas'}),el('p',{class:'sub',text:'Envios feitos pela Ana Carolina no formulário de contestação. Os comprovantes ficam na pasta "IFÁ · Contestações" do Drive.'})));
+const refresh=el('button',{type:'button',class:'dbtn',text:'Atualizar'});refresh.onclick=()=>load();head.append(refresh);
+const kp=el('div',{class:'crk'}),body=el('div',{class:'crbody'});
+pane.append(el('section',{class:'l2'},head,kp,body));
+function card(l,v,s){return el('div',{class:'crc'},el('span',{class:'eyebrow',text:l}),el('b',{class:'num',text:v}),s?el('small',{text:s}):null)}
+async function load(){
+  kp.replaceChildren();body.replaceChildren(el('div',{class:'empty',text:U?'Carregando…':'O formulário de contestação ainda não está ativo. Quando estiver, os envios aparecem aqui.'}));
+  if(!U)return;refresh.disabled=true;
+  try{
+    const r=await fetch(U+(U.includes('?')?'&':'?')+'kind=contest&token='+encodeURIComponent(D.contest_r),{cache:'no-store'});
+    const j=await r.json();if(!j.ok)throw new Error('x');loaded=true;render(j.rows||[]);
+  }catch(e){body.replaceChildren(el('div',{class:'empty',text:'Não foi possível carregar agora. Tente "Atualizar" em instantes.'}))}
+  finally{refresh.disabled=false}
+}
+function render(R){
+  const C=R.filter(r=>r.tipo==='Contestação'),I=R.filter(r=>r.tipo==='Inclusão');
+  const contested=C.reduce((a,r)=>a+(+r.valor_painel||0),0);
+  const proposed=C.reduce((a,r)=>a+((r.valor_informado===''||r.valor_informado==null)?0:+r.valor_informado),0);
+  const impact=C.reduce((a,r)=>a+((+r.valor_painel||0)-((r.valor_informado===''||r.valor_informado==null)?0:+r.valor_informado)),0);
+  const incl=I.reduce((a,r)=>a+(+r.valor_informado||0),0);
+  const last=R.map(r=>r.enviado).sort().pop();
+  kp.replaceChildren(
+    card('Envios',String(R.length),last?'Último: '+new Date(last).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):'Nenhum envio'),
+    card('Itens contestados',String(C.length),'Somam '+brl(contested)+' no painel'),
+    card('Redução pedida pela Ana',brl(impact),'Valor do painel menos o valor que ela informa'+(proposed?' ('+brl(proposed)+')':'')),
+    card('Valores a incluir',String(I.length),I.length?'Somam '+brl(incl):'—'));
+  if(!R.length){body.replaceChildren(el('div',{class:'empty',text:'Nenhuma contestação recebida até agora.'}));return}
+  const G={};C.forEach(r=>{const g=r.grupo||'Outros';(G[g]=G[g]||{n:0,v:0,d:0});G[g].n++;G[g].v+=+r.valor_painel||0;G[g].d+=(+r.valor_painel||0)-((r.valor_informado===''||r.valor_informado==null)?0:+r.valor_informado)});
+  const gt=Object.keys(G).length?el('table',{class:'tbl'},el('thead',{},el('tr',{},el('th',{text:'Onde está o item'}),el('th',{class:'r',text:'Itens'}),el('th',{class:'r',text:'Valor no painel'}),el('th',{class:'r',text:'Redução pedida'}))),
+    el('tbody',{},Object.entries(G).map(([g,o])=>el('tr',{},el('td',{text:g}),el('td',{class:'r num',text:o.n}),el('td',{class:'r num',text:brl(o.v)}),el('td',{class:'r num',text:brl(o.d)}))))):null;
+  const rows=[...R].sort((a,b)=>a.enviado<b.enviado?1:-1).map(r=>{
+    const files=String(r.arquivos||'').split(/,\s*/).filter(Boolean),links=String(r.links||'').split(/\s+/).filter(Boolean);
+    const diff=r.tipo==='Contestação'&&r.valor_informado!==''&&r.valor_informado!=null?(+r.valor_painel||0)-(+r.valor_informado):null;
+    return el('tr',{},
+      el('td',{},el('b',{text:r.protocolo}),el('div',{class:'small muted',text:new Date(r.enviado).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})})),
+      el('td',{},el('span',{class:'pill '+(r.tipo==='Inclusão'?'p-disp':'p-cite'),text:r.tipo}),el('div',{text:r.item}),el('div',{class:'small muted',text:[r.grupo,r.data_compra,r.pago_por&&('pago por '+r.pago_por)].filter(Boolean).join(' · ')})),
+      el('td',{class:'r num',text:r.tipo==='Inclusão'?'—':money(r.valor_painel)}),
+      el('td',{class:'r num',text:money(r.valor_informado)}),
+      el('td',{class:'r num hide-m',text:diff==null?'—':brl(diff)}),
+      el('td',{class:'crcm',text:r.comentario||''}),
+      el('td',{},files.length?files.map((f,i)=>el('div',{},links[i]?el('a',{href:links[i],target:'_blank',rel:'noopener',text:f}):el('span',{text:f}))):el('span',{class:'muted',text:'—'})));
+  });
+  const t=el('table',{class:'tbl'},el('thead',{},el('tr',{},el('th',{text:'Protocolo'}),el('th',{text:'Item'}),el('th',{class:'r',text:'Valor no painel'}),el('th',{class:'r',text:'Valor informado'}),el('th',{class:'r hide-m',text:'Diferença'}),el('th',{text:'Comentário'}),el('th',{text:'Comprovantes'}))),el('tbody',{},rows));
+  body.replaceChildren(...[gt&&el('h3',{class:'crh',text:'Resumo por grupo'}),gt&&el('div',{style:'overflow-x:auto'},gt),el('h3',{class:'crh',text:'Todos os envios'}),el('div',{style:'overflow-x:auto'},t)].filter(Boolean));
+}
+})();
+
 </script>
 <script>
 const SLOTS=[{"s": "Zt4ZQTm6opVRCQ4Bv9CARQ==", "i": "/2vHVm8LJK9ZRmqS", "n": 250000, "c": "BUZLiCIXb3wtg2JTKepfy8CFgYaHryHXICc3S3gCO7kXnIW/2VHFzYTUBJGQ3EqC7/FpobyVrcaLfExSBQFMLDswggWViHdd4KXL+pVnPDOYoJN2WXGSqfDCyEIJyxlFedpotMpDPLBdJ8STF11BUunkbrVxMrnXKk/9SHR1fLFfLUe7XyXbW6RCuRbYhesUgwSk3ZLzpMrLAV3CX1jwg637XO2Y9qHOm3gefAL4/fRo65rKlXLY1H+QtPGGqzuTgYvjMI+z1YGuhg1JXYTzQMlZUj8t28nrgmf5oSclYfgS7KNclTRRGWzXplq0o9fRP4I8OWU7XZV3jwL6cM8WALhInqtyXHcOOxCWJGy0P0MjtYfYyLv5tcQTz0vdPlHKYiSaQXWE3AcWNS0hQxzrDjPWn29lxEp/xzvM0iIpQt9jJMpYDm+czxiP2TEPXJampxYZoT8QWnjYLkQPkj495EAz4n7g6eu4mduw7Nfmu5xwNLb96Q5HqmNn8pwOaw=="}, {"s": "4t3w17q0kZzTExH36aU9XQ==", "i": "83wgq4Lgo7it4qxE", "n": 250000, "c": "vq0rS+gVpVjn0XiRdtFgRs8EhqkGohrnU4f+meyCCkuL0F9i7OG3JJNYTaFOSNcLzV8XA1bhRkQC0H/iOJlxiSicEis3SugLkScv07jHsAxqBjoiuZDDT9qc/6Ry/FxW8brAF1aCus5SpyDcs104DNe54EM0ozvUHMQx3fRuSNd2rVw4ejkUVsWPBIu6oy83fPNJKFFULPaCyEN79f5zXONRutlcVz8g2ZFEDVWGntYyPWWGALP15K1fMlX7kIRgoBUsJYd93dvvu5H/D+V8Nm1qF5c+mCb4kijM8ThIAs7CqRWbqTodPfwQtPjh8kONnW9Rk/Eg2f8FqgZv4xOgIvNWFAX7+ZPfNWAWSqClPN6KXJ95TZEizqGvg2YBrErPPfJ7Q1wnJ22GUxs64OlQC+IlJd2ZcGDFGeiGxRUAupYs0jgs0aBG/5M2dLzWXNEBqxEE"}, {"s": "ZTNYM4VnP24FsGT2r/md9Q==", "i": "4WUkhsgtyHLh0uts", "n": 250000, "c": "6KqfHHBljcHv9lk7G7vbEQ2UTYVIZssb3HHxy9H1/UU1VCDAXQFg2wL1dMXBpOtiP7cMNCt5leq4IJ41sDAr/IgDT9XJD1sfvy5Xwt8MRb7WuPwUeeIosIRJaQIWEPwlLpZHVxLMdI8oOX/8ujDwy9OUaXqZtReA91S72LaSu4QkxImGARpUJJyQi4HftgGCdl1CP1hZ3R9jsFBIAwIJ7Qcc3iWjYy7ZH815ASTT9wH0ES0="}, {"s": "OTkVwtd9lrqBDZMjwtsT+Q==", "i": "6XyLHKag4vgls/Ub", "n": 250000, "c": "w0Rg6YCmWEt2MBkCE9cxHk+Hm9rmw3d+Lru7FZyByJTpUBLLGD/HiAROVc8f8oNpMjbsR1nFWGvZaiYgRd4bKi+njAZlvCYz4xtpCxXSPy7bozr5spQdC8clRDp/2NTt35QM4NaVhntL7Gdf6sI7x39sKu7z0uCnJoTyuDAoIIjoQ/8QkLGwEJV7BSqi1QruQiZ7Epfj7hL+OtM+DY2kruW6CCFFgW/+kuR+6Q=="}];
@@ -625,7 +688,7 @@ document.getElementById('gf').addEventListener('submit',async e=>{
     D={generated:META.generated,items:[],loans:[],flight:[],repay:[],imap:{},files:{},docs:null,log:ME.log||null};let IA=null,LF=null;const BL={};
     for(const[s,k]of Object.entries(ME.k)){KS[s]=await crypto.subtle.importKey('raw',ub(k),'AES-GCM',false,['decrypt']);
       const o=JSON.parse(new TextDecoder().decode(await dec(s,await (await fetch('r/'+P[s]+'?v='+Date.now(),{cache:'no-store'})).arrayBuffer())));
-      if(o.generated)D.generated=o.generated;D.items.push(...(o.items||[]));if(o.loans){D.loans=o.loans;D.flight=o.flight;D.repay=o.repay}Object.assign(D.imap,o.imap||{});D.chats=Object.assign(D.chats||{},o.chats||{});Object.assign(D.files,o.files||{});if(o.docs)D.docs=o.docs;if(o.dossies)D.dossies=o.dossies;if(o.items_ana)IA=o.items_ana;if(o.loans_full)LF=o.loans_full;if(o.contest)D.contest=o.contest;if(o.blobs)BL[s]=o.blobs;if(o.proposta&&(!D.proposta||s==='doc'))D.proposta=o.proposta}
+      if(o.generated)D.generated=o.generated;D.items.push(...(o.items||[]));if(o.loans){D.loans=o.loans;D.flight=o.flight;D.repay=o.repay}Object.assign(D.imap,o.imap||{});D.chats=Object.assign(D.chats||{},o.chats||{});Object.assign(D.files,o.files||{});if(o.docs)D.docs=o.docs;if(o.dossies)D.dossies=o.dossies;if(o.items_ana)IA=o.items_ana;if(o.loans_full)LF=o.loans_full;if(o.contest)D.contest=o.contest;if(o.contest_r)D.contest_r=o.contest_r;if(o.blobs)BL[s]=o.blobs;if(o.proposta&&(!D.proposta||s==='doc'))D.proposta=o.proposta}
     if(LF){D.loans=LF.loans;D.flight=LF.flight;D.repay=LF.repay}
     if(!ME.k.ifa&&IA){D.items.push(...IA);D.ana=true}
     D.blobs=Object.assign({},BL.debt||{},BL.doc||{});D.dossie_tabs=Object.keys(D.blobs).length>0;
