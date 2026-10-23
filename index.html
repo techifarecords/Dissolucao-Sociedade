@@ -164,6 +164,25 @@ details.notes li{margin:4px 0}
  .kv{grid-template-columns:118px 1fr}
  .kpi .v{font-size:27px}
 }
+.db{display:grid;gap:16px}
+.dbtiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.dbtile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;display:grid;gap:4px}.dbtile b{font-size:24px;font-weight:600}.dbtile small{font-size:12.5px;color:var(--muted)}
+.dbgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px}
+.dbc{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;min-width:0}.dbc h3{margin:0 0 2px;font-size:15.5px}.dbsub{margin:0 0 12px;font-size:13px;color:var(--muted)}
+.dblg{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-2);margin:0 0 10px}.dblg i,.dbsplitl i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.dbh{display:grid;gap:10px}.dbrow{display:grid;grid-template-columns:minmax(120px,38%) 1fr;gap:10px;align-items:center;font-size:13px}
+.dbl{color:var(--ink-2);line-height:1.3}.dbtrack{display:flex;align-items:center;gap:8px;min-width:0}
+.dbbar{display:flex;gap:2px;height:14px;flex:1 1 auto;min-width:0}.dbbar span{display:block;height:100%;min-width:2px;cursor:default}.dbbar span:last-child{border-radius:0 4px 4px 0}
+.dbbar span:focus-visible,.dbsplit span:focus-visible,.dbcol:focus-visible{outline:2px solid var(--ink);outline-offset:1px}
+.dbv{font-size:12.5px;color:var(--ink);white-space:nowrap;flex:0 0 auto}
+.dbsplit{display:flex;gap:2px;height:22px;margin:4px 0 10px}.dbsplit span{display:block;height:100%}.dbsplit span:first-child{border-radius:4px 0 0 4px}.dbsplit span:last-child{border-radius:0 4px 4px 0;min-width:3px}
+.dbsplitl{display:grid;gap:4px;font-size:13px;color:var(--ink-2)}
+.dbscroll{overflow-x:auto}.dbsvg{width:100%;min-width:560px;height:auto;display:block}
+.dbsvg .dbgrid{stroke:var(--line-2);stroke-width:1}.dbsvg .dbbase{stroke:var(--line);stroke-width:1}.dbsvg .dbax{font-size:13px;fill:var(--muted);font-family:inherit}
+.dbnote{font-size:12.5px;color:var(--muted);margin:10px 0 0}
+.dbt{margin-top:10px;font-size:13px}.dbt summary{cursor:pointer;color:var(--navy);font-weight:500}.dbt .tbl{margin-top:8px}
+#dbtip{position:fixed;z-index:80;display:none;pointer-events:none;background:#17202b;color:#fff;font-size:12.5px;line-height:1.45;padding:7px 10px;border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.18);max-width:260px}
+@media (max-width:560px){.dbrow{grid-template-columns:1fr;gap:4px}}
 </style>
 
 <meta name="robots" content="noindex,nofollow,noarchive">
@@ -214,6 +233,7 @@ body.locked .wrap{display:none}
 </header>
 <nav class="tabs" role="tablist" id="tabs" hidden>
   <button role="tab" id="t-apur" aria-selected="true" aria-controls="tab-apur">Apuração</button>
+  <button role="tab" id="t-db" aria-selected="false" aria-controls="tab-db" hidden>Dashboard</button>
   <button role="tab" id="t-eq" aria-selected="false" aria-controls="tab-eq" hidden>Lista de equipamentos</button>
   <button role="tab" id="t-prop" aria-selected="false" aria-controls="tab-prop">Proposta de acordo</button>
   <button role="tab" id="t-dc" aria-selected="false" aria-controls="tab-dc" hidden>Dossiê de compras</button>
@@ -261,6 +281,7 @@ body.locked .wrap{display:none}
   </ul>
 </details>
 </div>
+<div id="tab-db" role="tabpanel" class="db" hidden></div>
 <div id="tab-eq" role="tabpanel" hidden></div>
 <div id="tab-prop" role="tabpanel" class="prop" hidden></div>
 <div id="tab-dc" role="tabpanel" hidden></div>
@@ -413,17 +434,102 @@ function renderDL(){const R=$('tab-dl');if(R.firstChild)return;const msg=el('div
  R.append(el('div',{class:'dlrow',style:'background:#f8f5ee'},el('div',{},el('b',{text:'Pacote completo'}),el('small',{text:'Todos os relatórios, dossiês, planilhas e a proposta em um único arquivo .zip'})),dlBtn('zip',msg,'Baixar tudo')),msg);if(!DL.zip)R.firstChild.remove();
  const G=[['Apuração',['comp','conf','ifa','divida','dhara','resumo']],['Equipamentos',['lista','eqx','dc']],['Proposta de acordo',['prop']],['Behringer ADA8200',['ada','adaE']]];
  for(let[g,ks]of G){ks=ks.filter(k=>DL[k]);if(!ks.length)continue;R.append(el('h3',{text:g,style:'margin:22px 0 8px;font-size:15px'}),el('div',{class:'dllist'},ks.map(k=>el('div',{class:'dlrow'},el('div',{},el('b',{text:DL[k][1]}),el('small',{text:DL[k][2]})),dlBtn(k,msg,'Baixar')))))}}
-const TABS={apuracao:['t-apur','tab-apur'],equipamentos:['t-eq','tab-eq'],proposta:['t-prop','tab-prop'],compras:['t-dc','tab-dc'],ada8200:['t-ada','tab-ada'],downloads:['t-dl','tab-dl']};
+/* ---------- dashboard ---------- */
+const DB_P='#2a78d6',DB_A='#eb6834';
+function dbTip(){let t=document.getElementById('dbtip');if(!t){t=el('div',{id:'dbtip',role:'tooltip'});document.body.append(t)}return t}
+function tipOn(node,html){node.setAttribute('tabindex','0');const show=e=>{const t=dbTip();t.innerHTML=html;t.style.display='block';const r=node.getBoundingClientRect();const x=(e&&e.clientX)||r.left+r.width/2,y=(e&&e.clientY)||r.top;t.style.left=Math.min(window.innerWidth-t.offsetWidth-8,Math.max(8,x-t.offsetWidth/2))+'px';t.style.top=Math.max(8,y-t.offsetHeight-12)+'px'};const hide=()=>{dbTip().style.display='none'};node.addEventListener('mousemove',show);node.addEventListener('mouseleave',hide);node.addEventListener('focus',()=>show());node.addEventListener('blur',hide)}
+const escH=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function dbCard(title,sub,...c){return el('section',{class:'dbc'},el('h3',{text:title}),sub?el('p',{class:'dbsub',text:sub}):null,...c)}
+function legend(items){return el('div',{class:'dblg'},items.map(([c,t])=>el('span',{},el('i',{style:'background:'+c}),t)))}
+function dbTable(head,rows){
+  const th=el('tr',{},head.map((h,i)=>el('th',{class:i?'r':'',text:h})));
+  const tb=el('tbody',{},rows.map(r=>el('tr',{},r.map((v,i)=>el('td',{class:i?'r num':'',text:v})))));
+  return el('details',{class:'dbt'},el('summary',{text:'Ver tabela'}),el('div',{style:'overflow-x:auto'},el('table',{class:'tbl'},el('thead',{},th),tb)))}
+function hbars(rows,max,opts={}){ // rows: {label, parts:[{v,c,n}], total}
+  return el('div',{class:'dbh'},rows.map(r=>{
+    const bar=el('div',{class:'dbbar'});
+    r.parts.filter(p=>p.v>0.005).forEach(p=>{const s=el('span',{style:`width:${p.v/max*100}%;background:${p.c}`});tipOn(s,`<b>${escH(r.label)}</b><br>${escH(p.n)}: ${brl(p.v)}`);bar.append(s)});
+    return el('div',{class:'dbrow'},el('div',{class:'dbl',text:r.label}),el('div',{class:'dbtrack'},bar,el('b',{class:'dbv num',text:opts.fmt?opts.fmt(r):brl(r.total)})));
+  }));
+}
+let dbDone=false;
+function renderDash(){
+  const R=$('tab-db');if(dbDone)return;dbDone=true;R.replaceChildren();
+  const EQ=I.filter(i=>i.cat==='Equipamentos e instrumentos'&&!/^Afinação|^Bolt|^Taxa de Saque/.test(i.title));
+  const eqV=sum(EQ.map(i=>i.value));
+  const P=D.proposta;
+  const tiles=[
+    ['Investimento na IFÁ',brl(iT),`Priscila ${pct(iP/iT)} · Ana Carolina ${pct(iA/iT)}`],
+    ['Dívida pessoal em aberto',brl(debtTotal),'Empréstimos, venda de bens e passagem'],
+    ['Equipamentos a devolver',brl(eqV),EQ.length+' lançamentos de compra'],
+  ];
+  if(P)tiles.push(['Total da proposta',brl(P.total),'Fora danos e custos a levantar']);
+  R.append(el('div',{class:'dbtiles'},tiles.map(([l,v,s])=>el('div',{class:'dbtile'},el('span',{class:'eyebrow',text:l}),el('b',{class:'num',text:v}),el('small',{text:s})))));
+  // 1. quem financiou
+  const split=el('div',{class:'dbsplit'});
+  [[iP,DB_P,'Priscila'],[iA,DB_A,'Ana Carolina']].forEach(([v,c,n])=>{const s=el('span',{style:`width:${v/iT*100}%;background:${c}`});tipOn(s,`<b>${n}</b><br>${brl(v)} · ${pct(v/iT)}`);split.append(s)});
+  const g=el('div',{class:'dbgrid'});R.append(g);
+  g.append(dbCard('Quem financiou a IFÁ','Soma dos aportes de cada sócia, em valores nominais.',split,
+    el('div',{class:'dbsplitl'},el('span',{},el('i',{style:'background:'+DB_P}),'Priscila ',el('b',{class:'num',text:`${brl(iP)} · ${pct(iP/iT)}`})),el('span',{},el('i',{style:'background:'+DB_A}),'Ana Carolina ',el('b',{class:'num',text:`${brl(iA)} · ${pct(iA/iT)}`})))));
+  // 2. proposta
+  if(P){const mx=Math.max(...P.pagar.map(x=>x[1]));
+    g.append(dbCard('Composição da proposta',`Valores a pagar pela Ana Carolina. Total ${brl(P.total)}.`,
+      hbars(P.pagar.map(([t,v])=>({label:t.replace(/\s*\(cláusula \d+\)/,''),parts:[{v,c:'#1f3f66',n:'Valor'}],total:v})),mx),
+      el('p',{class:'dbnote',text:'A acrescer após levantamento: '+P.acrescer.join('; ')+'.'})))}
+  // 3. categorias
+  const cats={};I.forEach(i=>{const c=cats[i.cat]=cats[i.cat]||{P:0,A:0};c[i.payer==='Ana'?'A':'P']+=i.value});
+  const cr=Object.entries(cats).map(([k,o])=>({label:k,P:o.P,A:o.A,total:o.P+o.A})).sort((a,b)=>b.total-a.total);
+  const cmax=Math.max(...cr.map(r=>r.total));
+  R.append(dbCard('Investimento na IFÁ por categoria','Quanto cada sócia pagou em cada tipo de despesa.',legend([[DB_P,'Priscila'],[DB_A,'Ana Carolina']]),
+    hbars(cr.map(r=>({label:r.label,parts:[{v:r.P,c:DB_P,n:'Priscila'},{v:r.A,c:DB_A,n:'Ana Carolina'}],total:r.total})),cmax),
+    dbTable(['Categoria','Priscila','Ana Carolina','Total'],cr.map(r=>[r.label,brl(r.P),brl(r.A),brl(r.total)]))));
+  // 4. por mês
+  const mk=d=>{const m=/^(\d\d)\/(\d\d)\/(\d{4})$/.exec(d||'');return m?m[3]+'-'+m[2]:null};
+  const M={};let undated=0;I.forEach(i=>{const k=mk(i.date);if(!k){undated+=i.value;return}const o=M[k]=M[k]||{P:0,A:0};o[i.payer==='Ana'?'A':'P']+=i.value});
+  const ks=Object.keys(M).sort();if(ks.length){
+    const all=[];let [y,m]=ks[0].split('-').map(Number);const [y2,m2]=ks[ks.length-1].split('-').map(Number);
+    while(y<y2||(y===y2&&m<=m2)){all.push(y+'-'+String(m).padStart(2,'0'));m++;if(m>12){m=1;y++}}
+    const W=Math.max(1000,all.length*30),Hh=300,pad={l:56,r:8,t:12,b:34};const mx=Math.max(...all.map(k=>(M[k]?M[k].P+M[k].A:0)));
+    const step=[500,1000,2000,2500,5000,10000,20000].find(s=>mx/s<=5)||Math.ceil(mx/5);const top=Math.ceil(mx/step)*step;
+    const ns='http://www.w3.org/2000/svg',S=(t,a)=>{const e=document.createElementNS(ns,t);for(const k in a)e.setAttribute(k,a[k]);return e};
+    const svg=S('svg',{viewBox:`0 0 ${W} ${Hh}`,class:'dbsvg',role:'img','aria-label':'Investimento na IFÁ por mês'});
+    const y0=v=>pad.t+(Hh-pad.t-pad.b)*(1-v/top);
+    for(let v=0;v<=top;v+=step){svg.append(S('line',{x1:pad.l,x2:W-pad.r,y1:y0(v),y2:y0(v),class:'dbgrid'}));const t=S('text',{x:pad.l-6,y:y0(v)+4,'text-anchor':'end',class:'dbax'});t.textContent=v>=1000?(v/1000).toLocaleString('pt-BR')+' mil':v;svg.append(t)}
+    const bw=(W-pad.l-pad.r)/all.length;const MN=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+    all.forEach((k,i)=>{const o=M[k]||{P:0,A:0};const x=pad.l+i*bw+bw*0.18,w=bw*0.64;const [yy,mm]=k.split('-');
+      const g2=S('g',{class:'dbcol'});let base=0;
+      [[o.P,DB_P],[o.A,DB_A]].forEach(([v,c])=>{if(v<=0)return;const yT=y0(base+v),yB=y0(base);g2.append(S('rect',{x,y:yT+(base?1:0),width:w,height:Math.max(1,yB-yT-(base?1:0)),fill:c,rx:base?0:2}));base+=v});
+      g2.append(S('rect',{x:pad.l+i*bw,y:pad.t,width:bw,height:Hh-pad.t-pad.b,fill:'transparent'}));
+      tipOn(g2,`<b>${MN[+mm-1]}/${yy}</b><br>Priscila: ${brl(o.P)}<br>Ana Carolina: ${brl(o.A)}<br>Total: ${brl(o.P+o.A)}`);
+      svg.append(g2);
+      if(+mm===1||i===0){const t=S('text',{x:pad.l+i*bw+bw/2,y:Hh-pad.b+16,'text-anchor':'middle',class:'dbax'});t.textContent=MN[+mm-1]+'/'+yy.slice(2);svg.append(t)}
+      else if(+mm%3===1&&i>=2){const t=S('text',{x:pad.l+i*bw+bw/2,y:Hh-pad.b+16,'text-anchor':'middle',class:'dbax'});t.textContent=MN[+mm-1];svg.append(t)}
+    });
+    svg.append(S('line',{x1:pad.l,x2:W-pad.r,y1:y0(0),y2:y0(0),class:'dbbase'}));
+    R.append(dbCard('Investimento na IFÁ por mês','Pagamentos por mês de cada sócia. Passe o mouse sobre a coluna para ver os valores.',legend([[DB_P,'Priscila'],[DB_A,'Ana Carolina']]),el('div',{class:'dbscroll'},svg),
+      undated>0?el('p',{class:'dbnote',text:'Lançamentos sem data de pagamento registrada (fora do gráfico): '+brl(undated)+'.'}):null,
+      dbTable(['Mês','Priscila','Ana Carolina','Total'],ks.map(k=>{const o=M[k];const [yy,mm]=k.split('-');return[mm+'/'+yy,brl(o.P),brl(o.A),brl(o.P+o.A)]}))));
+  }
+  // 5. dívida
+  const dr=DEBT.filter(c=>c.orig>0).map(c=>({label:c.title,dev:c.dev,saldo:c.saldo,total:c.orig}));const dmx=Math.max(...dr.map(r=>r.total));
+  R.append(dbCard('Dívida pessoal: valor original, devolvido e em aberto',`Em aberto: ${brl(debtTotal)}.`,legend([['#8f3a2c','Em aberto'],['#a9b6c4','Devolvido']]),
+    hbars(dr.map(r=>({label:r.label,parts:[{v:r.saldo,c:'#8f3a2c',n:'Em aberto'},{v:r.dev,c:'#a9b6c4',n:'Devolvido'}],total:r.total,saldo:r.saldo})),dmx,{fmt:r=>r.saldo>0.005?brl(r.saldo)+' em aberto':'quitado'}),
+    dbTable(['Grupo','Original','Devolvido','Em aberto'],dr.map(r=>[r.label,brl(r.total),brl(r.dev),brl(r.saldo)]))));
+}
+
+const TABS={apuracao:['t-apur','tab-apur'],dashboard:['t-db','tab-db'],equipamentos:['t-eq','tab-eq'],proposta:['t-prop','tab-prop'],compras:['t-dc','tab-dc'],ada8200:['t-ada','tab-ada'],downloads:['t-dl','tab-dl']};
 function frame(div,src,title,tab){if(div.firstChild)return;const bar=dlBar(tab);if(bar)div.append(bar);const f=el('iframe',{class:'dframe',title});window.blobFor(src).then(u=>{f.src=u}).catch(()=>{f.replaceWith(el('div',{class:'empty',text:'Documento indisponível.'}))});f.addEventListener('load',()=>{try{const h=f.contentDocument.documentElement.scrollHeight;f.style.height=(h+24)+'px'}catch(e){}});const bt=el('button',{type:'button',class:'dbtn',text:'Expandir em tela cheia'});
   bt.onclick=()=>{const on=!div.classList.contains('dfull');div.classList.toggle('dfull',on);document.body.style.overflow=on?'hidden':'';bt.textContent=on?'Fechar tela cheia ✕':'Expandir em tela cheia';if(on)bt.focus()};
   div.addEventListener('keydown',e=>{if(e.key==='Escape'&&div.classList.contains('dfull'))bt.click()});
   div.append(el('div',{class:'dtools'},el('span',{text:title}),bt),f)}
 function setTab(t){if(!TABS[t])t='apuracao';for(const[k,[b,p]]of Object.entries(TABS)){const on=k===t;$(p).hidden=!on;$(b).setAttribute('aria-selected',String(on))}
   if(t==='downloads')renderDL();
+  if(t==='dashboard')renderDash();
   if(t==='equipamentos')frame($('tab-eq'),'dossie/equipamentos-lista.html','Lista de retirada de equipamentos — checklist para a vistoria','equipamentos');
   if(t==='compras')frame($('tab-dc'),'dossie/equipamentos.html','Dossiê de comprovação — equipamentos do estúdio','compras');
   if(t==='ada8200')frame($('tab-ada'),'dossie/ada8200.html','Prova de pagamento — Behringer ADA8200','ada8200');}
 for(const[k,[b]]of Object.entries(TABS))$(b).onclick=()=>setTab(k);
+if(I.length){$('t-db').hidden=false;$('tabs').hidden=false}
 renderProp();
 if(D.dossie_tabs){{const b=dlBar('apuracao');if(b)$('tab-apur').prepend(b);const pb=dlBar('proposta');if(D.proposta&&pb)$('tab-prop').prepend(pb)}$('t-dl').hidden=false;$('tabs').hidden=false;$('t-dc').hidden=false;$('t-eq').hidden=false;$('t-ada').hidden=false}
 if(!D.proposta)$('t-prop').hidden=true;
