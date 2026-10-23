@@ -13,7 +13,7 @@ então um perfil não consegue abrir o que não é dele, nem baixando os arquivo
 |---|---|
 | Administrador | Tudo + relatório de acessos (sessões e visualizações por pessoa) |
 | Advogado | Dívida pessoal, investimento IFÁ, carreira da Dhara, contratos e planilha completa |
-| Ana Carolina | Só a dívida pessoal, com comprovantes e a planilha da dívida |
+| Ana Carolina | Versão para a outra parte: dívida pessoal, investimento IFÁ, lista de equipamentos, proposta de acordo, dossiês para envio, downloads e formulário de contestação de valores |
 | Dhara | Só o investimento na carreira dela, com comprovantes |
 
 ## Estrutura
