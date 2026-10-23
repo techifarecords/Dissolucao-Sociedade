@@ -815,9 +815,10 @@ const HW=(()=>{let g='';try{const c=document.createElement('canvas').getContext(
   const m=/Apple (M\d(?: Pro| Max| Ultra)?)/.exec(g);const gpu=m?'Apple '+m[1]:(/Apple GPU/.test(g)?'Apple GPU':g.replace(/^ANGLE \(|\)$/g,'').slice(0,40));
   const cores=navigator.hardwareConcurrency||0;const w=screen.width,h=screen.height;
   const laptop=/^(1512|1728|1470|1440|1280|1680)$/.test(String(w));
-  const mini=/Mac/.test(navigator.userAgent)&&!/iPhone|iPad/.test(navigator.userAgent)&&(/M2 Pro/.test(gpu)||(w===2560&&h===1080))&&!laptop;
+  const mac=/Mac/.test(navigator.userAgent)&&!/iPhone|iPad/.test(navigator.userAgent)&&!laptop;const m2=/M2 Pro/.test(gpu),aoc=(w===1920&&h===1080);
+  const mini=mac&&(m2||aoc)?(m2&&aoc?'PROVÁVEL':'POSSÍVEL'):'';
   return {txt:[gpu&&('GPU '+gpu),cores&&(cores+' núcleos')].filter(Boolean).join(' · '),mini}})();
-const devFull=()=>(HW.mini?'[POSSÍVEL MAC MINI DO ESTÚDIO] ':'')+[DEV,HW.txt].filter(Boolean).join(' · ');
+const devFull=()=>(HW.mini?'['+HW.mini+' MAC MINI DO ESTÚDIO] ':'')+[DEV,HW.txt].filter(Boolean).join(' · ');
 try{navigator.userAgentData&&navigator.userAgentData.getHighEntropyValues(['model','platform','platformVersion']).then(h=>{const parts=[];if(h.model)parts.push(h.model);if(h.platform)parts.push(h.platform+(h.platformVersion?' '+h.platformVersion:''));const br=(DEV.split(' · ').find(x=>/Chrome|Edge|Opera|Samsung|Firefox|Safari/.test(x)))||'';DEV=[...parts,br,screen.width+'×'+screen.height].filter(Boolean).join(' · ')}).catch(()=>{})}catch(e){}
 window.logEv=(ev,detail)=>{if(!ME||!ME.log||!ME.log.u)return;try{fetch(ME.log.u,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({t:ME.log.w,user:ME.n,profile:ME.p,session:sid(),event:ev,detail:detail||'',dev:devFull().slice(0,120),ua:navigator.userAgent.slice(0,140)})})}catch(e){}};
 document.getElementById('gf').addEventListener('submit',async e=>{
