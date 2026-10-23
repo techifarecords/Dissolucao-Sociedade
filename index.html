@@ -631,7 +631,7 @@ function adminBox(){
     const PF={admin:'Administrador',adv:'Advogado',ana:'Ana Carolina',dhara:'Dhara'};
     const t1=el('table',{class:'tbl'},el('thead',{},el('tr',{},el('th',{text:'Usuário'}),el('th',{class:'hide-m',text:'Perfil'}),el('th',{class:'r',text:'Sessões'}),el('th',{class:'r',text:'Entradas'}),el('th',{class:'r hide-m',text:'Visualizações'}),el('th',{text:'Aparelhos'}),el('th',{text:'Último acesso'}))),el('tbody',{},...Object.values(by).sort((a,b)=>a.last<b.last?1:-1).map(u=>el('tr',{},el('td',{text:u.user}),el('td',{class:'hide-m',text:PF[u.profile]||u.profile}),el('td',{class:'r num',text:u.s.size}),el('td',{class:'r num',text:u.logins}),el('td',{class:'r num hide-m',text:u.views}),el('td',{class:'small',text:[...u.dv].filter(Boolean).join(' / ')}),el('td',{class:'num',text:fmt(u.last)})))));
     const last=ev.slice().sort((a,b)=>a.ts<b.ts?1:-1).slice(0,60);
-    const t2=el('table',{class:'tx'},el('thead',{},el('tr',{},el('th',{text:'Data e hora'}),el('th',{text:'Usuário'}),el('th',{text:'Evento'}),el('th',{text:'Aparelho'}),el('th',{class:'hide-m',text:'Detalhe'}))),el('tbody',{},...last.map(e=>el('tr',{},el('td',{class:'num',style:'padding-left:14px',text:fmt(e.ts)}),el('td',{text:e.user}),el('td',{text:e.event}),el('td',{class:'small',text:e.dev||devOf(e.ua)}),el('td',{class:'hide-m small',text:e.detail||''})))));
+    const t2=el('table',{class:'tx'},el('thead',{},el('tr',{},el('th',{text:'Data e hora'}),el('th',{text:'Usuário'}),el('th',{text:'Evento'}),el('th',{text:'Aparelho'}),el('th',{class:'hide-m',text:'Detalhe'}))),el('tbody',{},...last.map(e=>el('tr',{},el('td',{class:'num',style:'padding-left:14px',text:fmt(e.ts)}),el('td',{text:e.user}),el('td',{text:e.event}),el('td',{class:'small',style:/MAC MINI/.test(e.dev||'')?'color:var(--debt);font-weight:600':'',text:e.dev||devOf(e.ua)}),el('td',{class:'hide-m small',text:e.detail||''})))));
     wrap.replaceWith(el('div',{style:'overflow-x:auto'},t1),el('div',{class:'sect',style:'padding:14px 0 0'},el('h4',{style:'padding:0 14px',text:'Últimos eventos'}),el('div',{style:'overflow-x:auto'},t2)));
   }).catch(()=>{wrap.textContent='Não foi possível ler o registro de acessos agora.'});
   return s}
@@ -811,8 +811,15 @@ let DEV=(()=>{const u=navigator.userAgent;let os='',br='';let m;
   else if(/Windows NT/.test(u))os='Windows';else if(/Mac OS X/.test(u))os='Mac';else if(/Linux/.test(u))os='Linux';
   br=/Edg\//.test(u)?'Edge':/OPR\//.test(u)?'Opera':/SamsungBrowser/.test(u)?'Samsung Internet':/CriOS|Chrome\//.test(u)?'Chrome':/FxiOS|Firefox\//.test(u)?'Firefox':/Safari\//.test(u)?'Safari':'';
   return [os,br,screen.width+'×'+screen.height].filter(Boolean).join(' · ')})();
+const HW=(()=>{let g='';try{const c=document.createElement('canvas').getContext('webgl');const x=c&&c.getExtension('WEBGL_debug_renderer_info');g=x?String(c.getParameter(x.UNMASKED_RENDERER_WEBGL)):'';}catch(e){}
+  const m=/Apple (M\d(?: Pro| Max| Ultra)?)/.exec(g);const gpu=m?'Apple '+m[1]:(/Apple GPU/.test(g)?'Apple GPU':g.replace(/^ANGLE \(|\)$/g,'').slice(0,40));
+  const cores=navigator.hardwareConcurrency||0;const w=screen.width,h=screen.height;
+  const laptop=/^(1512|1728|1470|1440|1280|1680)$/.test(String(w));
+  const mini=/Mac/.test(navigator.userAgent)&&!/iPhone|iPad/.test(navigator.userAgent)&&(/M2 Pro/.test(gpu)||(w===2560&&h===1080))&&!laptop;
+  return {txt:[gpu&&('GPU '+gpu),cores&&(cores+' núcleos')].filter(Boolean).join(' · '),mini}})();
+const devFull=()=>(HW.mini?'[POSSÍVEL MAC MINI DO ESTÚDIO] ':'')+[DEV,HW.txt].filter(Boolean).join(' · ');
 try{navigator.userAgentData&&navigator.userAgentData.getHighEntropyValues(['model','platform','platformVersion']).then(h=>{const parts=[];if(h.model)parts.push(h.model);if(h.platform)parts.push(h.platform+(h.platformVersion?' '+h.platformVersion:''));const br=(DEV.split(' · ').find(x=>/Chrome|Edge|Opera|Samsung|Firefox|Safari/.test(x)))||'';DEV=[...parts,br,screen.width+'×'+screen.height].filter(Boolean).join(' · ')}).catch(()=>{})}catch(e){}
-window.logEv=(ev,detail)=>{if(!ME||!ME.log||!ME.log.u)return;try{fetch(ME.log.u,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({t:ME.log.w,user:ME.n,profile:ME.p,session:sid(),event:ev,detail:detail||'',dev:DEV.slice(0,120),ua:navigator.userAgent.slice(0,140)})})}catch(e){}};
+window.logEv=(ev,detail)=>{if(!ME||!ME.log||!ME.log.u)return;try{fetch(ME.log.u,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({t:ME.log.w,user:ME.n,profile:ME.p,session:sid(),event:ev,detail:detail||'',dev:devFull().slice(0,120),ua:navigator.userAgent.slice(0,140)})})}catch(e){}};
 document.getElementById('gf').addEventListener('submit',async e=>{
   e.preventDefault();const b=document.getElementById('gb'),er=document.getElementById('ge');b.disabled=true;er.textContent='Verificando…';
   try{ME=await openSlot(document.getElementById('gp').value);
