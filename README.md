@@ -1,6 +1,6 @@
 # Dissolução societária IFÁ — painel de apuração
 
-Painel estático publicado em **https://dissolucao.ifarecords.com.br/apuracao-82bedc0733/** (GitHub Pages).
+Painel estático publicado em **https://dissolucao.ifarecords.com.br/** (GitHub Pages).
 Todo o conteúdo é **criptografado** (AES-256-GCM). Sem uma senha válida, os arquivos
 deste repositório não revelam nenhum dado.
 
@@ -20,9 +20,9 @@ então um perfil não consegue abrir o que não é dele, nem baixando os arquivo
 
 | Caminho | O que é |
 |---|---|
-| `apuracao-82bedc0733/index.html` | Tela de senha + painel + dados criptografados. Gerado pelo gerador de acessos. |
-| `apuracao-82bedc0733/r/*.bin` | Comprovantes, contratos e planilhas criptografados. |
-| `index.html`, `404.html` | Redirecionam para o site institucional. Nenhum link aponta para o painel. |
+| `index.html` | Tela de senha + painel + dados criptografados. Gerado pelo gerador de acessos. |
+| `r/*.bin` | Comprovantes, contratos e planilhas criptografados. |
+| `404.html` | Redireciona para o site institucional. `apuracao-82bedc0733/` redireciona para a raiz (endereço antigo). |
 | `robots.txt` | Pede aos buscadores para não indexar nada. |
 | `CNAME` | Domínio `dissolucao.ifarecords.com.br`. |
 
@@ -30,7 +30,7 @@ então um perfil não consegue abrir o que não é dele, nem baixando os arquivo
 
 1. Abra o `gerador-de-senhas.html` **no seu computador** (ele não fica neste repositório).
 2. Uma linha por pessoa: nome, perfil e senha → **Gerar index.html**.
-3. No GitHub: pasta `apuracao-82bedc0733` → *Add file* → *Upload files* → `index.html` → *Commit*.
+3. No GitHub: raiz do repositório → *Add file* → *Upload files* → `index.html` → *Commit*.
 
 ## Registro de acessos
 
