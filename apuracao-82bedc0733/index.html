@@ -365,7 +365,7 @@ function openDebt(r){LOG('abrir',r.title.slice(0,80));
     kv([['Data',r.date],['Valor emprestado',brl(r.value)],['Devolvido',brl(r.repaid||0)],['Saldo',brl(r.saldo)],['Situação',el('span',{class:'pill '+s[1],text:s[0]})]]),
     r.conditions?sect('Condições combinadas',el('p',{class:'quote',text:r.conditions})):null,
     ev.length?sect('Transações',...ev.map(e=>txCard(e,e.label||(e.de==='Ana Carolina'?'Devolução da Ana':'Saída da Priscila')))):sect('Transação',el('p',{class:'small muted',text:'Sem comprovante: valor citado na conversa.'}),chatBlock('L'+r.date+r.value)),
-    r.context&&r.context.length?sect('Registro na conversa',...r.context.map(c=>el('p',{class:'quote',text:c}))):null])}
+    r.context&&r.context.length?sect('Registro na conversa',...r.context.map(c=>el('p',{class:'quote',text:c})),chatBlock('L'+r.date+r.value)):(CH['L'+r.date+r.value]&&ev.length?sect('Conversa',chatBlock('L'+r.date+r.value)):null)])}
 
 /* ---------- profile visibility + extra sections ---------- */
 if(!SC.fin){document.querySelector('.l1').hidden=true;$('k-dh').hidden=true;document.querySelector('header.top h1').textContent='Investimentos na carreira artística';document.querySelector('header.top .eyebrow').textContent='Dhara Guimarães';document.querySelector('details.notes').hidden=true}
