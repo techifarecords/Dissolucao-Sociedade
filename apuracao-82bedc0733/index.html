@@ -107,6 +107,14 @@ details.notes li{margin:4px 0}
 .thumbs button{all:unset;cursor:zoom-in;border:1px solid var(--line);border-radius:6px;overflow:hidden;width:120px;height:150px;background:#fafbfc}
 .thumbs button:focus-visible{outline:2px solid var(--navy)}
 .thumbs img{width:100%;height:100%;object-fit:cover;object-position:top}
+.cbtn{margin-top:8px;font:500 13px var(--sans,inherit);color:var(--accent,#1f4f80);background:transparent;border:1px solid var(--line);border-radius:7px;padding:6px 10px;cursor:pointer}
+.cbtn[aria-expanded="true"]{background:var(--line-2,#eef1f4)}
+.chatbox{margin-top:8px;display:flex;flex-direction:column;gap:6px;border-top:1px dashed var(--line);padding-top:8px}
+.chatbox .cn{font-size:11.5px;color:var(--ink-2)}
+.cm{max-width:92%;border:1px solid var(--line);border-radius:9px;padding:6px 9px;background:#fafbfc;font-size:13px;line-height:1.4;overflow-wrap:anywhere}
+.cm.me{margin-left:auto;background:#edf5ee}
+.cm.h{border-color:#c98a00;box-shadow:inset 3px 0 0 #c98a00}
+.cm .mh{font-size:11px;color:var(--ink-2);margin-bottom:2px}
 .stmt{font-family:var(--mono);font-size:12px;background:#fafbfc;border:1px solid var(--line-2);border-radius:6px;padding:7px 9px;color:var(--ink-2)}
 .lb{position:fixed;inset:0;z-index:40;background:rgba(10,14,20,.9);display:flex;align-items:center;justify-content:center;padding:16px;cursor:zoom-out}
 .lb img{max-width:100%;max-height:100%;object-fit:contain;background:#fff;border-radius:4px}
@@ -304,6 +312,13 @@ function debtRows(rows){
 
 /* ---------- drawer ---------- */
 let lastFocus=null;
+const CH=D.chats||{};
+function chatBlock(key){
+  const ms=CH[key];if(!ms||!ms.length)return null;
+  const box=el('div',{class:'chatbox',hidden:true},el('div',{class:'cn',text:'Trecho transcrito da exportação do WhatsApp. Em destaque, a mensagem do comprovante ou a que cita o valor. Dados de terceiros omitidos.'}),
+    ...ms.map(m=>el('div',{class:'cm'+(m.s==='Priscila'?' me':'')+(m.h?' h':'')},el('div',{class:'mh',text:m.s+' · '+m.d+' '+m.t+' · '+m.c}),el('div',{text:m.x}))));
+  const b=el('button',{type:'button',class:'cbtn','aria-expanded':'false',onclick:()=>{box.hidden=!box.hidden;b.setAttribute('aria-expanded',String(!box.hidden));b.textContent=box.hidden?'Inspecionar conversa':'Ocultar conversa'}},'Inspecionar conversa');
+  return el('div',{},b,box)}
 function openDrawer(eyebrow,title,value,blocks){lastFocus=document.activeElement;$('dE').textContent=eyebrow;$('dT').textContent=title;$('dV').textContent=value==null?'':brl(value);const B=$('dB');B.replaceChildren(...blocks.filter(Boolean));$('scrim').hidden=false;$('drawer').hidden=false;B.scrollTop=0;$('dX').focus()}
 function closeDrawer(){$('scrim').hidden=true;$('drawer').hidden=true;if(lastFocus)lastFocus.focus()}
 $('dX').onclick=closeDrawer;$('scrim').onclick=closeDrawer;
@@ -322,7 +337,8 @@ function txCard(e,label){
     kv([['ID interno',e.id],['Data',e.date+(e.hora?' às '+e.hora:'')],['Meio',e.meio],['Banco',e.banco_origem||e.banco],['De',nameOf(e.de)],['Para',nameOf(e.para)],['ID da transação',id],['Enviado em',e.enviado?e.enviado+' (WhatsApp)':''],['Fonte',src]]),
     e.quote&&e.quote!=='Sem legenda.'?el('p',{class:'quote',text:e.quote}):null,
     ...(e.stmt||[]).map(s=>el('div',{class:'stmt',text:s})),
-    thumbs(e.files))}
+    thumbs(e.files),
+    chatBlock(e.id))}
 function openItem(i){LOG('abrir',i.title.slice(0,80));
   const pay=i.payer==='Ana'?'Ana Carolina Oliveira':'Priscila Cristina de Araujo';
   const blocks=[kv([['Categoria',i.cat],['Data',i.date||'sem data'],['Pago por',pay],['Prova',proofPill(i.proof,itemHasFiles(i))],['Origem do registro',i.origin],['Referência',i.ref&&!/^C\d{3}/.test(i.ref)?i.ref:'']])];
@@ -330,6 +346,7 @@ function openItem(i){LOG('abrir',i.title.slice(0,80));
   if(i.files&&i.files.length)blocks.push(sect('Documento',thumbs(i.files)));
   if(i.stmt&&i.stmt.length)blocks.push(sect('Extrato',...i.stmt.map(s=>el('div',{class:'stmt',text:s}))));
   if(i.note)blocks.push(sect('Observação',el('p',{class:'quote',text:i.note})));
+  if(!i.ev.length&&CH['k'+i.k])blocks.push(sect('Conversa',chatBlock('k'+i.k)));
   if(!i.ev.length&&!(i.files&&i.files.length)&&!(i.stmt&&i.stmt.length))blocks.push(sect('Prova',el('p',{class:'small muted',text:i.proof==='Só na planilha antiga'?'Lançado na planilha de controle da IFÁ, sem comprovante individual.':(i.proof==='Só citado na conversa'?'Valor registrado na conversa, sem comprovante anexado.':'Lançamento conferido em extrato ou fatura (ver referência).')})));
   openDrawer((mode==='dhara'?(SC.fin?'Dhara · consulta · ':'Carreira da Dhara · '):'Investimento IFÁ · ')+i.cat,i.title,i.value,blocks)}
 function openDebt(r){LOG('abrir',r.title.slice(0,80));
@@ -347,7 +364,7 @@ function openDebt(r){LOG('abrir',r.title.slice(0,80));
   openDrawer('Dívida pessoal · '+(DEBT.find(c=>c.rows.includes(r))||{}).title,r.title,r.saldo,[
     kv([['Data',r.date],['Valor emprestado',brl(r.value)],['Devolvido',brl(r.repaid||0)],['Saldo',brl(r.saldo)],['Situação',el('span',{class:'pill '+s[1],text:s[0]})]]),
     r.conditions?sect('Condições combinadas',el('p',{class:'quote',text:r.conditions})):null,
-    ev.length?sect('Transações',...ev.map(e=>txCard(e,e.label||(e.de==='Ana Carolina'?'Devolução da Ana':'Saída da Priscila')))):sect('Transação',el('p',{class:'small muted',text:'Sem comprovante: valor citado na conversa.'})),
+    ev.length?sect('Transações',...ev.map(e=>txCard(e,e.label||(e.de==='Ana Carolina'?'Devolução da Ana':'Saída da Priscila')))):sect('Transação',el('p',{class:'small muted',text:'Sem comprovante: valor citado na conversa.'}),chatBlock('L'+r.date+r.value)),
     r.context&&r.context.length?sect('Registro na conversa',...r.context.map(c=>el('p',{class:'quote',text:c}))):null])}
 
 /* ---------- profile visibility + extra sections ---------- */
@@ -423,7 +440,7 @@ document.getElementById('gf').addEventListener('submit',async e=>{
     D={generated:META.generated,items:[],loans:[],flight:[],repay:[],imap:{},files:{},docs:null,log:ME.log||null};
     for(const[s,k]of Object.entries(ME.k)){KS[s]=await crypto.subtle.importKey('raw',ub(k),'AES-GCM',false,['decrypt']);
       const o=JSON.parse(new TextDecoder().decode(await dec(s,await (await fetch('r/'+P[s]+'?v='+Date.now(),{cache:'no-store'})).arrayBuffer())));
-      if(o.generated)D.generated=o.generated;D.items.push(...(o.items||[]));if(o.loans){D.loans=o.loans;D.flight=o.flight;D.repay=o.repay}Object.assign(D.imap,o.imap||{});Object.assign(D.files,o.files||{});if(o.docs)D.docs=o.docs;if(o.dossies)D.dossies=o.dossies}
+      if(o.generated)D.generated=o.generated;D.items.push(...(o.items||[]));if(o.loans){D.loans=o.loans;D.flight=o.flight;D.repay=o.repay}Object.assign(D.imap,o.imap||{});D.chats=Object.assign(D.chats||{},o.chats||{});Object.assign(D.files,o.files||{});if(o.docs)D.docs=o.docs;if(o.dossies)D.dossies=o.dossies}
     D.scope={debt:!!ME.k.debt,ifa:!!ME.k.ifa,fin:!!(ME.k.debt||ME.k.ifa),dh:!!ME.k.dh,doc:!!ME.k.doc,adm:ME.p==='admin'};
     if(D.scope.ifa&&D.files.xlsx_debt)delete D.files.xlsx_debt;
     if(ME.p!=='admin'&&ME.p!=='adv'&&D.files.xlsx_full)delete D.files.xlsx_full;
