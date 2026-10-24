@@ -270,11 +270,11 @@ document.addEventListener('DOMContentLoaded',()=>{const g=document.getElementByI
   </button>
 </section>
 <div class="consult" id="k-bens" aria-pressed="false">
-  <span><b>Bens de propriedade da Priscila, cedidos para uso:</b> equipamentos e instrumentos do estúdio, adquiridos com recursos dela — <span class="num" id="vBens"></span>. Não são custos da IFÁ.</span>
+  <span><b>Equipamentos do estúdio:</b> instrumentos e equipamentos adquiridos pela Priscila — <span class="num" id="vBens"></span>. Registrados separadamente dos custos da IFÁ.</span>
   <button type="button" id="b-bens" aria-controls="l2">Ver detalhamento</button>
 </div>
 <div class="consult" id="k-cafe" aria-pressed="false">
-  <span><b>Contrato do Projeto Café (27/05/2024), entre Priscila e Ana Carolina:</b> valores pagos no contrato — <span class="num" id="vCafe"></span>. Fora dos custos da IFÁ; a restituição decorre do próprio contrato.</span>
+  <span><b>Contrato do Projeto Café (27/05/2024), entre Priscila e Ana Carolina:</b> valores pagos no contrato — <span class="num" id="vCafe"></span>. Registrados separadamente dos custos da IFÁ.</span>
   <button type="button" id="b-cafe" aria-controls="l2">Ver detalhamento</button>
 </div>
 <div class="consult" id="k-dh" aria-pressed="false">
@@ -367,10 +367,10 @@ $('vDh').textContent=brl(tot(H));$('vBens').textContent=brl(tot(B));$('vCafe').t
 
 /* ---------- layer 2 ---------- */
 const MT={ifa:['Custos da IFÁ por categoria','Valores pagos por cada parte para a IFÁ. Clique numa categoria para ver os lançamentos e num lançamento para ver a transação e o comprovante.'],
- bens:['Bens de propriedade da Priscila, cedidos para uso','Equipamentos e instrumentos adquiridos com recursos da Priscila. Não são custos da IFÁ. Clique numa categoria para ver os lançamentos e os comprovantes.'],
- cafe:['Contrato do Projeto Café (27/05/2024)','Contrato entre Priscila (contratante) e Ana Carolina (contratada), anterior à IFÁ. Fora dos custos da IFÁ; a restituição dos itens pagos e não entregues decorre do próprio contrato.'],
+ bens:['Equipamentos do estúdio','Instrumentos e equipamentos adquiridos pela Priscila, registrados separadamente dos custos da IFÁ. Clique numa categoria para ver os lançamentos e os comprovantes.'],
+ cafe:['Contrato do Projeto Café (27/05/2024)','Contrato entre Priscila e Ana Carolina, anterior à IFÁ, registrado separadamente dos custos da IFÁ.'],
  dhara:[(D.dh_consulta?'Consulta — investimento pessoal na carreira de Dhara Guimarães':(SC.fin?'Consulta — investimento na carreira da Dhara (fora do acerto da IFÁ)':'Investimento na carreira de Dhara Guimarães')),(D.dh_consulta?'O investimento e a dívida referentes à carreira da Dhara Guimarães são de caráter pessoal entre Priscila Araujo e Dhara Guimarães e serão tratados apenas com a artista. Não fazem parte do acerto entre Priscila e Ana Carolina: as informações abaixo são apenas para consulta.':(SC.fin?'Não entra no acerto da IFÁ. Registro para consulta da Priscila e da Dhara.':'Valores pagos para a carreira artística, por categoria. Clique numa categoria para ver os lançamentos e num lançamento para ver a transação e o comprovante.'))]};
-const MP={ifa:'Custos da IFÁ · ',bens:'Bens da Priscila · ',cafe:'Contrato do Café · ',dhara:(SC.fin?'Dhara · consulta · ':'Carreira da Dhara · ')};
+const MP={ifa:'Custos da IFÁ · ',bens:'Equipamentos do estúdio · ',cafe:'Contrato do Café · ',dhara:(SC.fin?'Dhara · consulta · ':'Carreira da Dhara · ')};
 let mode=SC.debt?'debt':(SC.ifa?'ifa':'dhara'),query='';
 const nz=s=>(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 function match(r){if(!query)return true;const q=nz(query);const blob=nz([r.title,r.date,r.value&&r.value.toFixed(2).replace('.',','),r.payer,(r.ev||[]).map(e=>[e.de,e.para,e.what,e.txid].join(' ')).join(' '),r.note,r.ref].join(' '));return blob.includes(q)}
@@ -436,7 +436,7 @@ function renderProp(){
 }
 
 const DL={
- ifa:['dl/Relatorio_Investimento_IFA.pdf','Relatório de custos da IFÁ e bens da Priscila','Custos da IFÁ, bens da Priscila e contrato do Café, com comprovantes'],
+ ifa:['dl/Relatorio_Investimento_IFA.pdf','Relatório de custos da IFÁ e equipamentos do estúdio','Custos da IFÁ, equipamentos do estúdio e contrato do Café, com comprovantes'],
  divida:['dl/Relatorio_Divida_Ana_Carolina.pdf','Relatório da dívida pessoal','Empréstimos, passagem e devoluções, com comprovantes'],
  dhara:['dl/Relatorio_Investimento_Dhara.pdf','Relatório de investimento na Dhara','Custos da carreira da artista, com comprovantes'],
  comp:['dl/Comprovantes_IFA_Ana_Carolina.xlsx','Planilha de apuração completa','Todos os lançamentos'],
@@ -487,7 +487,7 @@ function renderDash(){
   const tiles=[
     ['Custos da IFÁ',brl(iT),`Priscila ${pct(iP/iT)} · Ana Carolina ${pct(iA/iT)}`],
     ['Dívida pessoal em aberto',brl(debtTotal),'Empréstimos, venda de bens e passagem'],
-    ['Bens da Priscila a devolver',brl(eqV),'Equipamentos e instrumentos cedidos para uso'],
+    ['Equipamentos do estúdio',brl(eqV),'Instrumentos e equipamentos adquiridos pela Priscila'],
   ];
   if(P)tiles.push(['Total da proposta',brl(P.total),'Fora danos e custos a levantar']);
   R.append(el('div',{class:'dbtiles'},tiles.map(([l,v,s])=>el('div',{class:'dbtile'},el('span',{class:'eyebrow',text:l}),el('b',{class:'num',text:v}),el('small',{text:s})))));
@@ -504,7 +504,7 @@ function renderDash(){
       el('p',{class:'dbnote',text:'A acrescer após levantamento: '+P.acrescer.join('; ')+'.'})))}
   if(CF.length){const cp=tot(CF,'Priscila'),rest=P?((P.pagar.find(x=>/Café/.test(x[0]))||[])[1]||0):0;
     g.append(dbCard('Contrato do Projeto Café','Contrato de 27/05/2024 entre Priscila e Ana Carolina, fora dos custos da IFÁ.',
-      hbars([{label:'Pago pela Priscila no contrato',parts:[{v:cp,c:'var(--navy)',n:'Pago'}],total:cp},{label:'A restituir: itens pagos e não entregues',parts:[{v:rest,c:'var(--debt)',n:'A restituir'}],total:rest}],Math.max(cp,rest)),
+      hbars([{label:'Pago pela Priscila no contrato',parts:[{v:cp,c:'var(--navy)',n:'Pago'}],total:cp},{label:'Itens previstos e não realizados',parts:[{v:rest,c:'var(--debt)',n:'Não realizados'}],total:rest}],Math.max(cp,rest)),
       el('p',{class:'dbnote',text:'A produção musical não é cobrada; a multa contratual também não.'})))}
   // 3. categorias
   const cats={};I.forEach(i=>{const c=cats[i.cat]=cats[i.cat]||{P:0,A:0};c[i.payer==='Ana'?'A':'P']+=i.value});
@@ -683,13 +683,13 @@ if(D.ana){
   const P=D.proposta;
   const T=[];
   const tile=(cls,key,eyebrow,val,sub,extra)=>{const b=el('button',{type:'button',class:'ovt '+cls,'data-k':key},el('span',{class:'eyebrow',text:eyebrow}),el('b',{class:'num',text:val}),sub?el('small',{text:sub}):null,extra||null,el('span',{class:'go',text:'Ver detalhes →'}));T.push(b);return b};
-  const hero=tile('hero','bens','Investimento da Priscila em equipamentos',brl(bV),`Equipamentos e instrumentos do estúdio, comprados com recursos da Priscila e cedidos para uso. Não são custos da IFÁ: voltam para a Priscila.`+(bX>0.005?` Além disso, ${brl(bX)} de afinação e transporte dos equipamentos.`:''),el('div',{class:'chips'},eqTop.map(t=>el('span',{text:t}))));
+  const hero=tile('hero','bens','Investimento da Priscila em equipamentos',brl(bV),`Instrumentos e equipamentos do estúdio adquiridos pela Priscila, registrados separadamente dos custos da IFÁ.`+(bX>0.005?` Afinação e transporte (${brl(bX)}) aparecem em lançamentos à parte.`:''),el('div',{class:'chips'},eqTop.map(t=>el('span',{text:t}))));
   const bar=el('div',{class:'ovbar'},el('i',{style:`width:${iP/iT*100}%;background:#2a78d6`}),el('i',{style:`width:${iA/iT*100}%;background:#eb6834`}));
   const tiles=[hero,
     P?tile('prop','prop','Proposta de acordo',brl(P.total),'Valor a pagar pela Ana Carolina, fora itens a apurar'):null,
     tile('','debt','Dívida pessoal',brl(debtTotal),'Empréstimos, venda de bens e passagem aérea'),
     tile('','ifa','Custos da IFÁ',brl(iT),`Priscila ${pct(iP/iT)} · Ana Carolina ${pct(iA/iT)}`,bar),
-    CF.length?tile('','cafe','Contrato do Projeto Café',brl(tot(CF,'Priscila')),'Pagos pela Priscila no contrato; fora dos custos da IFÁ'):null,
+    CF.length?tile('','cafe','Contrato do Projeto Café',brl(tot(CF,'Priscila')),'Valores pagos no contrato, registrados separadamente'):null,
     (D.dh_consulta&&H.length)?tile('muted','dhara','Carreira da Dhara · só consulta',brl(tot(H)),'Caráter pessoal entre Priscila e Dhara; fora deste acerto'):null].filter(Boolean);
   const ov=el('section',{class:'ov','aria-label':'Visão geral'},el('h2',{text:'Visão geral'}),el('p',{class:'ovs',text:'Clique num número para ver as categorias e, dentro delas, cada lançamento com o comprovante.'}),el('div',{class:'ovg'},tiles));
   const mark=k=>T.forEach(t=>t.setAttribute('aria-current',String(t.dataset.k===k)));
@@ -714,7 +714,7 @@ const fmt=v=>typeof brl==='function'?brl(v):'R$ '+Number(v).toFixed(2).replace('
 const OPT=[];
 const add=(g,ref,date,title,value)=>OPT.push({g,ref,date:date||'',title,value:+value||0});
 (D.items||[]).filter(i=>i.sec==='ifa').forEach(i=>add('Custos da IFÁ','I'+i.k,i.date,i.title,i.value));
-(D.items||[]).filter(i=>i.sec==='bens').forEach(i=>add('Bens da Priscila cedidos para uso','I'+i.k,i.date,i.title,i.value));
+(D.items||[]).filter(i=>i.sec==='bens').forEach(i=>add('Equipamentos do estúdio','I'+i.k,i.date,i.title,i.value));
 (D.items||[]).filter(i=>i.sec==='cafe').forEach(i=>add('Contrato do Projeto Café','I'+i.k,i.date,i.title,i.value));
 (D.loans||[]).forEach(l=>add('Dívida pessoal — empréstimos','L'+l.date+'|'+l.value,l.date,l.title,l.value));
 (D.flight||[]).forEach(f=>add('Dívida pessoal — passagem aérea','F'+f.n,f.month,'Passagem aérea — parcela '+f.n,f.value));
