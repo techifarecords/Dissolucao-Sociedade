@@ -705,8 +705,8 @@ if(D.strat&&SC.doc&&!D.ana){
     sec('Pontos que o advogado da Ana pode levantar',el('ul',{class:'sgx'},Z.atencao.map(t=>el('li',{text:t})))),
     sec('Roteiro sugerido',el('ol',{},Z.roteiro.map(t=>el('li',{text:t}))))));
 }
-/* ---------- BIG NUMBERS: visão geral da Ana ---------- */
-if(D.ana){
+/* ---------- BIG NUMBERS: visão geral (perfis com apuração) ---------- */
+if(SC.fin){
   const st=document.createElement('style');st.textContent=`
 .ov{margin:6px 0 26px}.ov h2{font-size:15px;margin:0 0 4px;letter-spacing:.01em}.ov .ovs{color:var(--muted);font-size:13px;margin:0 0 14px}
 .ovg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
@@ -737,7 +737,7 @@ if(D.ana){
     tile('','debt','Dívida pessoal',brl(debtTotal),'Empréstimos, venda de bens e passagem aérea'),
     tile('','ifa','Custos operacionais da IFÁ',brl(iT),`Priscila ${pct(iP/iT)} · Ana Carolina ${pct(iA/iT)}`,bar),
     CF.length?tile('','cafe','Contrato do Projeto Café',brl(tot(CF,'Priscila')),'Valores pagos no contrato, registrados separadamente'):null,
-    (D.dh_consulta&&H.length)?tile('muted','dhara','Carreira da Dhara · só consulta',brl(tot(H)),'Caráter pessoal entre Priscila e Dhara; fora deste acerto'):null].filter(Boolean);
+    ((D.dh_consulta||SC.dh)&&H.length)?tile('muted','dhara',D.dh_consulta?'Carreira da Dhara · só consulta':'Carreira da Dhara · consulta',brl(tot(H)),'Caráter pessoal entre Priscila e Dhara; fora deste acerto'):null].filter(Boolean);
   const ov=el('section',{class:'ov','aria-label':'Visão geral'},el('h2',{text:'Visão geral'}),el('p',{class:'ovs',text:'Clique num número para ver as categorias e, dentro delas, cada lançamento com o comprovante.'}),el('div',{class:'ovg'},tiles));
   const mark=k=>T.forEach(t=>t.setAttribute('aria-current',String(t.dataset.k===k)));
   T.forEach(t=>t.onclick=()=>{const k=t.dataset.k;LOG('visão geral',k);if(k==='prop'){setTab('proposta');window.scrollTo({top:0,behavior:'smooth'});return}setMode(k);mark(k);$('l2').scrollIntoView({behavior:'smooth',block:'start'})});
