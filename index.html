@@ -262,7 +262,7 @@ document.addEventListener('DOMContentLoaded',()=>{const g=document.getElementByI
     <span class="hint">Clique para ver o detalhamento por categoria</span>
   </button>
   <button class="kpi" id="k-inv" aria-pressed="false" aria-controls="l2">
-    <span class="eyebrow">2 · Custos da IFÁ pagos pelas partes</span>
+    <span class="eyebrow">2 · Custos operacionais da IFÁ pagos pelas partes</span>
     <span class="v num" id="vInv"></span>
     <div class="bar" id="barInv" aria-hidden="true"></div>
     <div class="rows" id="rInv"></div>
@@ -270,11 +270,11 @@ document.addEventListener('DOMContentLoaded',()=>{const g=document.getElementByI
   </button>
 </section>
 <div class="consult" id="k-bens" aria-pressed="false">
-  <span><b>Equipamentos do estúdio:</b> instrumentos e equipamentos adquiridos pela Priscila — <span class="num" id="vBens"></span>. Registrados separadamente dos custos da IFÁ.</span>
+  <span><b>Equipamentos do estúdio:</b> instrumentos e equipamentos adquiridos pela Priscila — <span class="num" id="vBens"></span>. Registrados separadamente dos custos operacionais da IFÁ.</span>
   <button type="button" id="b-bens" aria-controls="l2">Ver detalhamento</button>
 </div>
 <div class="consult" id="k-cafe" aria-pressed="false">
-  <span><b>Contrato do Projeto Café (27/05/2024), entre Priscila e Ana Carolina:</b> valores pagos no contrato — <span class="num" id="vCafe"></span>. Registrados separadamente dos custos da IFÁ.</span>
+  <span><b>Contrato do Projeto Café (27/05/2024), entre Priscila e Ana Carolina:</b> valores pagos no contrato — <span class="num" id="vCafe"></span>. Registrados separadamente dos custos operacionais da IFÁ.</span>
   <button type="button" id="b-cafe" aria-controls="l2">Ver detalhamento</button>
 </div>
 <div class="consult" id="k-dh" aria-pressed="false">
@@ -366,11 +366,11 @@ if(iT)$('rInv').append(el('div',{},el('span',{text:'Priscila'}),el('b',{class:'n
 $('vDh').textContent=brl(tot(H));$('vBens').textContent=brl(tot(B));$('vCafe').textContent=brl(tot(CF));if(!B.length)$('k-bens').hidden=true;if(!CF.length)$('k-cafe').hidden=true;
 
 /* ---------- layer 2 ---------- */
-const MT={ifa:['Custos da IFÁ por categoria','Valores pagos por cada parte para a IFÁ. Clique numa categoria para ver os lançamentos e num lançamento para ver a transação e o comprovante.'],
- bens:['Equipamentos do estúdio','Instrumentos e equipamentos adquiridos pela Priscila, registrados separadamente dos custos da IFÁ. Clique numa categoria para ver os lançamentos e os comprovantes.'],
- cafe:['Contrato do Projeto Café (27/05/2024)','Contrato entre Priscila e Ana Carolina, anterior à IFÁ, registrado separadamente dos custos da IFÁ.'],
+const MT={ifa:['Custos operacionais da IFÁ por categoria','Valores pagos por cada parte para a IFÁ. Clique numa categoria para ver os lançamentos e num lançamento para ver a transação e o comprovante.'],
+ bens:['Equipamentos do estúdio','Instrumentos e equipamentos adquiridos pela Priscila, registrados separadamente dos custos operacionais da IFÁ. Clique numa categoria para ver os lançamentos e os comprovantes.'],
+ cafe:['Contrato do Projeto Café (27/05/2024)','Contrato entre Priscila e Ana Carolina, anterior à IFÁ, registrado separadamente dos custos operacionais da IFÁ.'],
  dhara:[(D.dh_consulta?'Consulta — investimento pessoal na carreira de Dhara Guimarães':(SC.fin?'Consulta — investimento na carreira da Dhara (fora do acerto da IFÁ)':'Investimento na carreira de Dhara Guimarães')),(D.dh_consulta?'O investimento e a dívida referentes à carreira da Dhara Guimarães são de caráter pessoal entre Priscila Araujo e Dhara Guimarães e serão tratados apenas com a artista. Não fazem parte do acerto entre Priscila e Ana Carolina: as informações abaixo são apenas para consulta.':(SC.fin?'Não entra no acerto da IFÁ. Registro para consulta da Priscila e da Dhara.':'Valores pagos para a carreira artística, por categoria. Clique numa categoria para ver os lançamentos e num lançamento para ver a transação e o comprovante.'))]};
-const MP={ifa:'Custos da IFÁ · ',bens:'Equipamentos do estúdio · ',cafe:'Contrato do Café · ',dhara:(SC.fin?'Dhara · consulta · ':'Carreira da Dhara · ')};
+const MP={ifa:'Custos operacionais da IFÁ · ',bens:'Equipamentos do estúdio · ',cafe:'Contrato do Café · ',dhara:(SC.fin?'Dhara · consulta · ':'Carreira da Dhara · ')};
 let mode=SC.debt?'debt':(SC.ifa?'ifa':'dhara'),query='';
 const nz=s=>(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 function match(r){if(!query)return true;const q=nz(query);const blob=nz([r.title,r.date,r.value&&r.value.toFixed(2).replace('.',','),r.payer,(r.ev||[]).map(e=>[e.de,e.para,e.what,e.txid].join(' ')).join(' '),r.note,r.ref].join(' '));return blob.includes(q)}
@@ -436,7 +436,7 @@ function renderProp(){
 }
 
 const DL={
- ifa:['dl/Relatorio_Investimento_IFA.pdf','Relatório de custos da IFÁ e equipamentos do estúdio','Custos da IFÁ, equipamentos do estúdio e contrato do Café, com comprovantes'],
+ ifa:['dl/Relatorio_Investimento_IFA.pdf','Relatório de custos operacionais da IFÁ e equipamentos do estúdio','Custos operacionais da IFÁ, equipamentos do estúdio e contrato do Café, com comprovantes'],
  divida:['dl/Relatorio_Divida_Ana_Carolina.pdf','Relatório da dívida pessoal','Empréstimos, passagem e devoluções, com comprovantes'],
  dhara:['dl/Relatorio_Investimento_Dhara.pdf','Relatório de investimento na Dhara','Custos da carreira da artista, com comprovantes'],
  comp:['dl/Comprovantes_IFA_Ana_Carolina.xlsx','Planilha de apuração completa','Todos os lançamentos'],
@@ -485,7 +485,7 @@ function renderDash(){
   const eqV=sum(EQ.map(i=>i.value));
   const P=D.proposta;
   const tiles=[
-    ['Custos da IFÁ',brl(iT),`Priscila ${pct(iP/iT)} · Ana Carolina ${pct(iA/iT)}`],
+    ['Custos operacionais da IFÁ',brl(iT),`Priscila ${pct(iP/iT)} · Ana Carolina ${pct(iA/iT)}`],
     ['Dívida pessoal em aberto',brl(debtTotal),'Empréstimos, venda de bens e passagem'],
     ['Equipamentos do estúdio',brl(eqV),'Instrumentos e equipamentos adquiridos pela Priscila'],
   ];
@@ -495,7 +495,7 @@ function renderDash(){
   const split=el('div',{class:'dbsplit'});
   [[iP,DB_P,'Priscila'],[iA,DB_A,'Ana Carolina']].forEach(([v,c,n])=>{const s=el('span',{style:`width:${v/iT*100}%;background:${c}`});tipOn(s,`<b>${n}</b><br>${brl(v)} · ${pct(v/iT)}`);split.append(s)});
   const g=el('div',{class:'dbgrid'});R.append(g);
-  g.append(dbCard('Custos da IFÁ pagos por cada parte','Soma dos pagamentos de cada parte para a IFÁ, em valores nominais.',split,
+  g.append(dbCard('Custos operacionais da IFÁ pagos por cada parte','Soma dos pagamentos de cada parte para a IFÁ, em valores nominais.',split,
     el('div',{class:'dbsplitl'},el('span',{},el('i',{style:'background:'+DB_P}),'Priscila ',el('b',{class:'num',text:`${brl(iP)} · ${pct(iP/iT)}`})),el('span',{},el('i',{style:'background:'+DB_A}),'Ana Carolina ',el('b',{class:'num',text:`${brl(iA)} · ${pct(iA/iT)}`})))));
   // 2. proposta
   if(P){const mx=Math.max(...P.pagar.map(x=>x[1]));
@@ -503,14 +503,14 @@ function renderDash(){
       hbars(P.pagar.map(([t,v])=>({label:t.replace(/\s*\(cláusula \d+\)/,''),parts:[{v,c:'var(--navy)',n:'Valor'}],total:v})),mx),
       el('p',{class:'dbnote',text:'A acrescer após levantamento: '+P.acrescer.join('; ')+'.'})))}
   if(CF.length){const cp=tot(CF,'Priscila'),rest=P?((P.pagar.find(x=>/Café/.test(x[0]))||[])[1]||0):0;
-    g.append(dbCard('Contrato do Projeto Café','Contrato de 27/05/2024 entre Priscila e Ana Carolina, fora dos custos da IFÁ.',
+    g.append(dbCard('Contrato do Projeto Café','Contrato de 27/05/2024 entre Priscila e Ana Carolina, fora dos custos operacionais da IFÁ.',
       hbars([{label:'Pago pela Priscila no contrato',parts:[{v:cp,c:'var(--navy)',n:'Pago'}],total:cp},{label:'Itens previstos e não realizados',parts:[{v:rest,c:'var(--debt)',n:'Não realizados'}],total:rest}],Math.max(cp,rest)),
       el('p',{class:'dbnote',text:'A produção musical não é cobrada; a multa contratual também não.'})))}
   // 3. categorias
   const cats={};I.forEach(i=>{const c=cats[i.cat]=cats[i.cat]||{P:0,A:0};c[i.payer==='Ana'?'A':'P']+=i.value});
   const cr=Object.entries(cats).map(([k,o])=>({label:k,P:o.P,A:o.A,total:o.P+o.A})).sort((a,b)=>b.total-a.total);
   const cmax=Math.max(...cr.map(r=>r.total));
-  R.append(dbCard('Custos da IFÁ por categoria','Quanto cada parte pagou em cada tipo de despesa.',legend([[DB_P,'Priscila'],[DB_A,'Ana Carolina']]),
+  R.append(dbCard('Custos operacionais da IFÁ por categoria','Quanto cada parte pagou em cada tipo de despesa.',legend([[DB_P,'Priscila'],[DB_A,'Ana Carolina']]),
     hbars(cr.map(r=>({label:r.label,parts:[{v:r.P,c:DB_P,n:'Priscila'},{v:r.A,c:DB_A,n:'Ana Carolina'}],total:r.total})),cmax),
     dbTable(['Categoria','Priscila','Ana Carolina','Total'],cr.map(r=>[r.label,brl(r.P),brl(r.A),brl(r.total)]))));
   // 4. por mês
@@ -522,7 +522,7 @@ function renderDash(){
     const W=Math.max(1000,all.length*30),Hh=300,pad={l:56,r:8,t:12,b:34};const mx=Math.max(...all.map(k=>(M[k]?M[k].P+M[k].A:0)));
     const step=[500,1000,2000,2500,5000,10000,20000].find(s=>mx/s<=5)||Math.ceil(mx/5);const top=Math.ceil(mx/step)*step;
     const ns='http://www.w3.org/2000/svg',S=(t,a)=>{const e=document.createElementNS(ns,t);for(const k in a)e.setAttribute(k,a[k]);return e};
-    const svg=S('svg',{viewBox:`0 0 ${W} ${Hh}`,class:'dbsvg',role:'img','aria-label':'Custos da IFÁ por mês'});
+    const svg=S('svg',{viewBox:`0 0 ${W} ${Hh}`,class:'dbsvg',role:'img','aria-label':'Custos operacionais da IFÁ por mês'});
     const y0=v=>pad.t+(Hh-pad.t-pad.b)*(1-v/top);
     for(let v=0;v<=top;v+=step){svg.append(S('line',{x1:pad.l,x2:W-pad.r,y1:y0(v),y2:y0(v),class:'dbgrid'}));const t=S('text',{x:pad.l-6,y:y0(v)+4,'text-anchor':'end',class:'dbax'});t.textContent=v>=1000?(v/1000).toLocaleString('pt-BR')+' mil':v;svg.append(t)}
     const bw=(W-pad.l-pad.r)/all.length;const MN=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
@@ -536,7 +536,7 @@ function renderDash(){
       else if(+mm%3===1&&i>=2){const t=S('text',{x:pad.l+i*bw+bw/2,y:Hh-pad.b+16,'text-anchor':'middle',class:'dbax'});t.textContent=MN[+mm-1];svg.append(t)}
     });
     svg.append(S('line',{x1:pad.l,x2:W-pad.r,y1:y0(0),y2:y0(0),class:'dbbase'}));
-    R.append(dbCard('Custos da IFÁ por mês','Pagamentos por mês de cada parte. Passe o mouse sobre a coluna para ver os valores.',legend([[DB_P,'Priscila'],[DB_A,'Ana Carolina']]),el('div',{class:'dbscroll'},svg),
+    R.append(dbCard('Custos operacionais da IFÁ por mês','Pagamentos por mês de cada parte. Passe o mouse sobre a coluna para ver os valores.',legend([[DB_P,'Priscila'],[DB_A,'Ana Carolina']]),el('div',{class:'dbscroll'},svg),
       undated>0?el('p',{class:'dbnote',text:'Lançamentos sem data de pagamento registrada (fora do gráfico): '+brl(undated)+'.'}):null,
       dbTable(['Mês','Priscila','Ana Carolina','Total'],ks.map(k=>{const o=M[k];const [yy,mm]=k.split('-');return[mm+'/'+yy,brl(o.P),brl(o.A),brl(o.P+o.A)]}))));
   }
@@ -658,6 +658,53 @@ function adminBox(){
   }).catch(()=>{wrap.textContent='Não foi possível ler o registro de acessos agora.'});
   return s}
 renderExtra();
+
+/* ---------- estratégia (somente administradora e advogada) ---------- */
+if(D.strat&&SC.doc&&!D.ana){
+  const Z=D.strat;const st=document.createElement('style');st.textContent=`
+.sg h2{margin:0 0 4px}.sg .lead{color:var(--muted);font-size:14px;margin:0 0 18px;max-width:820px}
+.sg .warnbar{font-size:12.5px;color:var(--warn);background:var(--warn-soft);border-radius:8px;padding:8px 12px;margin-bottom:16px}
+.sgk{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:22px}
+.sgk div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;gap:4px}
+.sgk b{font-size:22px;font-variant-numeric:tabular-nums}.sgk small{color:var(--muted);font-size:12.5px;line-height:1.4}
+.sgk .hi{border-color:var(--navy);box-shadow:inset 0 3px 0 var(--navy)}.sgk .lo b{color:var(--debt)}
+.sgs{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:16px}
+.sgs h3{font-size:15px;margin:0 0 10px}.sgs ul,.sgs ol{margin:0;padding-left:20px;display:grid;gap:8px;font-size:14px}
+.sga{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.sga div{border-left:3px solid var(--navy);padding:2px 0 2px 12px}.sga b{display:block;font-size:14px;margin-bottom:2px}.sga p{margin:0;font-size:13.5px;color:var(--ink-2)}
+.sgq{display:grid;gap:10px}.sgq figure{margin:0;padding:10px 14px;border-radius:8px;background:var(--surface-2);border:1px solid var(--line-2)}
+.sgq blockquote{margin:0;font-size:14px}.sgq figcaption{font-size:12px;color:var(--muted);margin-top:4px}
+.sgq .ana blockquote::before{content:'Ana · ';font-weight:600;color:var(--debt)}.sgq .pri blockquote::before{content:'Priscila · ';font-weight:600;color:var(--navy)}
+.sgt td,.sgt th{font-size:13px}.sgt .g td{font-weight:600;background:var(--surface-2)}
+.sgx li{color:var(--ink-2)}
+@media (max-width:900px){.sgk{grid-template-columns:repeat(2,minmax(0,1fr))}.sga{grid-template-columns:1fr}}@media (max-width:520px){.sgk{grid-template-columns:1fr}}`;document.head.append(st);
+  const nav=$('tabs');nav.hidden=false;
+  const tb=el('button',{role:'tab',id:'t-sg','aria-selected':'false','aria-controls':'tab-sg',text:'Estratégia'});nav.append(tb);
+  const pane=el('div',{id:'tab-sg',role:'tabpanel',class:'sg',hidden:true});$('tab-dl').after(pane);
+  TABS.estrategia=['t-sg','tab-sg'];tb.onclick=()=>{setTab('estrategia');LOG('view','Estratégia')};
+  const sec=(t,...c)=>el('section',{class:'sgs'},el('h3',{text:t}),...c);
+  const fig=x=>el('figure',{class:/^Ana/.test(x.autor)?'ana':(/^Priscila$/.test(x.autor)?'pri':'')},el('blockquote',{text:(/^Ana$|^Priscila$/.test(x.autor)?'':x.autor+' · ')+'“'+x.texto+'”'}),el('figcaption',{text:x.data+(x.ctx?' · '+x.ctx:'')}));
+  const fv=v=>Array.isArray(v)?brl(v[0])+' a '+brl(v[1]):brl(v);
+  const S=Z.sim,T=S.tot,DL=T['Dívida pessoal'],CF=T['Café'];
+  const tr=(c,cls)=>el('tr',{class:cls||''},c.map((v,i)=>el(i?'td':'td',{class:i?'r num':'',text:typeof v==='number'?brl(v):v})));
+  const simT=el('table',{class:'tbl sgt'},el('thead',{},el('tr',{},['Grupo','Nominal (proposta)','+ IPCA','+ IPCA e juros legais','+ IPCA e 1% a.m.'].map((h,i)=>el('th',{class:i?'r':'',text:h})))),
+    el('tbody',{},tr(['Dívida pessoal vencida',DL.v,DL.ipca,DL.legal,DL.um]),tr(['Restituição do Café',CF.v,CF.ipca,CF.legal,CF.um]),
+      tr(['Passagem (parcelas a vencer)',S.fl,S.fl,S.fl,S.fl]),tr(['Aluguel dos equipamentos',S.uso,S.uso,S.uso,S.uso]),tr(['Reembolso da marca',S.mar,S.mar,S.mar,S.mar]),
+      tr(['Multa do contrato do Café',0,S.mul,S.mul,S.mul]),
+      tr(['Total',S.fl+S.uso+S.mar+DL.v+CF.v,DL.ipca+CF.ipca+S.fl+S.uso+S.mar+S.mul,DL.legal+CF.legal+S.fl+S.uso+S.mar+S.mul,DL.um+CF.um+S.fl+S.uso+S.mar+S.mul],'g')));
+  const det=el('details',{class:'dbt'},el('summary',{text:'Ver o cálculo item a item'}),el('div',{style:'overflow-x:auto'},el('table',{class:'tbl sgt'},el('thead',{},el('tr',{},['Grupo','Data','Item','Nominal','Meses','+ IPCA','+ juros legais','+ 1% a.m.'].map((h,i)=>el('th',{class:i>2?'r':'',text:h})))),
+    el('tbody',{},S.rows.map(r=>el('tr',{},[r.grupo,r.date,r.title,brl(r.v),String(r.n),brl(r.ipca),brl(r.legal),brl(r.um)].map((v,i)=>el('td',{class:i>2?'r num':'',text:v}))))))));
+  pane.append(el('section',{class:'l2',style:'border:0;background:transparent'},
+    el('h2',{text:'Estratégia para a negociação'}),el('p',{class:'lead',text:Z.objetivo}),
+    el('div',{class:'warnbar',text:'Uso interno da advogada e da Priscila. Esta página não aparece para a Ana Carolina e não deve ser enviada à outra parte.'}),
+    el('div',{class:'sgk'},Z.kpis.map((k,i)=>el('div',{class:i===0?'hi':(i===2?'lo':'')},el('span',{class:'eyebrow',text:k.l}),el('b',{class:'num',text:fv(k.v)}),el('small',{text:k.s})))),
+    sec('Por que o acordo é a melhor saída para a Ana',el('div',{class:'sga'},Z.argumentos.map(([t,p])=>el('div',{},el('b',{text:t}),el('p',{text:p}))))),
+    sec('Simulação: a mesma conta com correção, juros e multa',el('div',{style:'overflow-x:auto'},simT),det,el('p',{class:'dbnote',text:S.nota})),
+    sec('Contexto (relato da Priscila)',el('ul',{},Z.contexto.map(t=>el('li',{text:t})))),
+    ...Z.trechos.map(([t,qs])=>sec(t,el('div',{class:'sgq'},qs.map(fig)))),
+    sec('O que pesa contra a Ana numa disputa',el('div',{class:'sgq'},Z.riscos_ana.map(([t,x])=>el('div',{},el('b',{style:'font-size:13.5px;display:block;margin-bottom:4px',text:t}),fig(x))))),
+    sec('Pontos de atenção antes da conversa',el('ul',{class:'sgx'},Z.atencao.map(t=>el('li',{text:t})))),
+    sec('Roteiro sugerido',el('ol',{},Z.roteiro.map(t=>el('li',{text:t}))))));
+}
 /* ---------- BIG NUMBERS: visão geral da Ana ---------- */
 if(D.ana){
   const st=document.createElement('style');st.textContent=`
@@ -683,12 +730,12 @@ if(D.ana){
   const P=D.proposta;
   const T=[];
   const tile=(cls,key,eyebrow,val,sub,extra)=>{const b=el('button',{type:'button',class:'ovt '+cls,'data-k':key},el('span',{class:'eyebrow',text:eyebrow}),el('b',{class:'num',text:val}),sub?el('small',{text:sub}):null,extra||null,el('span',{class:'go',text:'Ver detalhes →'}));T.push(b);return b};
-  const hero=tile('hero','bens','Investimento da Priscila em equipamentos',brl(bV),`Instrumentos e equipamentos do estúdio adquiridos pela Priscila, registrados separadamente dos custos da IFÁ.`+(bX>0.005?` Afinação e transporte (${brl(bX)}) aparecem em lançamentos à parte.`:''),el('div',{class:'chips'},eqTop.map(t=>el('span',{text:t}))));
+  const hero=tile('hero','bens','Investimento da Priscila em equipamentos',brl(bV),`Instrumentos e equipamentos do estúdio adquiridos pela Priscila, registrados separadamente dos custos operacionais da IFÁ.`+(bX>0.005?` Afinação e transporte (${brl(bX)}) aparecem em lançamentos à parte.`:''),el('div',{class:'chips'},eqTop.map(t=>el('span',{text:t}))));
   const bar=el('div',{class:'ovbar'},el('i',{style:`width:${iP/iT*100}%;background:#2a78d6`}),el('i',{style:`width:${iA/iT*100}%;background:#eb6834`}));
   const tiles=[hero,
     P?tile('prop','prop','Proposta de acordo',brl(P.total),'Valor a pagar pela Ana Carolina, fora itens a apurar'):null,
     tile('','debt','Dívida pessoal',brl(debtTotal),'Empréstimos, venda de bens e passagem aérea'),
-    tile('','ifa','Custos da IFÁ',brl(iT),`Priscila ${pct(iP/iT)} · Ana Carolina ${pct(iA/iT)}`,bar),
+    tile('','ifa','Custos operacionais da IFÁ',brl(iT),`Priscila ${pct(iP/iT)} · Ana Carolina ${pct(iA/iT)}`,bar),
     CF.length?tile('','cafe','Contrato do Projeto Café',brl(tot(CF,'Priscila')),'Valores pagos no contrato, registrados separadamente'):null,
     (D.dh_consulta&&H.length)?tile('muted','dhara','Carreira da Dhara · só consulta',brl(tot(H)),'Caráter pessoal entre Priscila e Dhara; fora deste acerto'):null].filter(Boolean);
   const ov=el('section',{class:'ov','aria-label':'Visão geral'},el('h2',{text:'Visão geral'}),el('p',{class:'ovs',text:'Clique num número para ver as categorias e, dentro delas, cada lançamento com o comprovante.'}),el('div',{class:'ovg'},tiles));
@@ -713,7 +760,7 @@ const fmt=v=>typeof brl==='function'?brl(v):'R$ '+Number(v).toFixed(2).replace('
 // itens do painel
 const OPT=[];
 const add=(g,ref,date,title,value)=>OPT.push({g,ref,date:date||'',title,value:+value||0});
-(D.items||[]).filter(i=>i.sec==='ifa').forEach(i=>add('Custos da IFÁ','I'+i.k,i.date,i.title,i.value));
+(D.items||[]).filter(i=>i.sec==='ifa').forEach(i=>add('Custos operacionais da IFÁ','I'+i.k,i.date,i.title,i.value));
 (D.items||[]).filter(i=>i.sec==='bens').forEach(i=>add('Equipamentos do estúdio','I'+i.k,i.date,i.title,i.value));
 (D.items||[]).filter(i=>i.sec==='cafe').forEach(i=>add('Contrato do Projeto Café','I'+i.k,i.date,i.title,i.value));
 (D.loans||[]).forEach(l=>add('Dívida pessoal — empréstimos','L'+l.date+'|'+l.value,l.date,l.title,l.value));
@@ -727,7 +774,7 @@ const fld=(lab,inp,help)=>el('label',{class:'ctf'},el('span',{text:lab}),inp,hel
 const tC=el('input',{type:'radio',name:'ct-tipo',value:'contestar',checked:''}),tI=el('input',{type:'radio',name:'ct-tipo',value:'incluir'});
 const vNew=el('input',{type:'text',inputmode:'decimal',id:'ct-v',placeholder:'0,00'});
 const iDate=el('input',{type:'date',id:'ct-d'}),iDesc=el('input',{type:'text',id:'ct-desc',maxlength:'200',placeholder:'Ex.: compra de cabos para o estúdio'}),iVal=el('input',{type:'text',inputmode:'decimal',id:'ct-iv',placeholder:'0,00'});
-const iCat=el('select',{id:'ct-cat'},['Custos da IFÁ','Bens / equipamentos','Contrato do Projeto Café','Dívida pessoal / devolução de empréstimo','Outro'].map(t=>el('option',{text:t})));
+const iCat=el('select',{id:'ct-cat'},['Custos operacionais da IFÁ','Bens / equipamentos','Contrato do Projeto Café','Dívida pessoal / devolução de empréstimo','Outro'].map(t=>el('option',{text:t})));
 const iPay=el('select',{id:'ct-pay'},['Ana Carolina','Priscila','Outra pessoa'].map(t=>el('option',{text:t})));
 const com=el('textarea',{id:'ct-c',rows:'4',maxlength:'2000',required:'',placeholder:'Explique o motivo da contestação ou a origem do valor.'});
 const file=el('input',{type:'file',id:'ct-f',multiple:'',accept:'.pdf,.jpg,.jpeg,.png,.heic,.webp'});
@@ -897,7 +944,7 @@ async function unlock(me,first){const b=document.getElementById('gb'),er=documen
     D={generated:META.generated,items:[],loans:[],flight:[],repay:[],imap:{},files:{},docs:null,log:ME.log||null};let IA=null,LF=null,IDH=null;const BL={};
     for(const[s,k]of Object.entries(ME.k)){KS[s]=await crypto.subtle.importKey('raw',ub(k),'AES-GCM',false,['decrypt']);
       const o=JSON.parse(new TextDecoder().decode(await dec(s,await (await fetch('r/'+P[s]+'?v='+Date.now(),{cache:'no-store'})).arrayBuffer())));
-      if(o.generated)D.generated=o.generated;D.items.push(...(o.items||[]));if(o.loans){D.loans=o.loans;D.flight=o.flight;D.repay=o.repay}Object.assign(D.imap,o.imap||{});D.chats=Object.assign(D.chats||{},o.chats||{});Object.assign(D.files,o.files||{});if(o.docs)D.docs=o.docs;if(o.dossies)D.dossies=o.dossies;if(o.items_ana)IA=o.items_ana;if(o.items_dh_ana)IDH=o.items_dh_ana;if(o.loans_full)LF=o.loans_full;if(o.contest)D.contest=o.contest;if(o.contest_r)D.contest_r=o.contest_r;if(o.blobs)BL[s]=o.blobs;if(o.proposta&&(!D.proposta||s==='doc'))D.proposta=o.proposta}
+      if(o.generated)D.generated=o.generated;D.items.push(...(o.items||[]));if(o.loans){D.loans=o.loans;D.flight=o.flight;D.repay=o.repay}Object.assign(D.imap,o.imap||{});D.chats=Object.assign(D.chats||{},o.chats||{});Object.assign(D.files,o.files||{});if(o.docs)D.docs=o.docs;if(o.dossies)D.dossies=o.dossies;if(o.items_ana)IA=o.items_ana;if(o.items_dh_ana)IDH=o.items_dh_ana;if(o.loans_full)LF=o.loans_full;if(o.contest)D.contest=o.contest;if(o.contest_r)D.contest_r=o.contest_r;if(o.strat)D.strat=o.strat;if(o.blobs)BL[s]=o.blobs;if(o.proposta&&(!D.proposta||s==='doc'))D.proposta=o.proposta}
     if(LF){D.loans=LF.loans;D.flight=LF.flight;D.repay=LF.repay}
     if(!ME.k.ifa&&IA){D.items.push(...IA);D.ana=true}
     if(!ME.k.dh&&D.ana&&IDH){D.items.push(...IDH);D.dh_consulta=true}
