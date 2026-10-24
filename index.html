@@ -644,6 +644,48 @@ function adminBox(){
   }).catch(()=>{wrap.textContent='Não foi possível ler o registro de acessos agora.'});
   return s}
 renderExtra();
+/* ---------- BIG NUMBERS: visão geral da Ana ---------- */
+if(D.ana){
+  const st=document.createElement('style');st.textContent=`
+.ov{margin:6px 0 26px}.ov h2{font-size:15px;margin:0 0 4px;letter-spacing:.01em}.ov .ovs{color:var(--muted);font-size:13px;margin:0 0 14px}
+.ovg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.ovt{all:unset;box-sizing:border-box;cursor:pointer;display:grid;align-content:start;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;position:relative;min-width:0}
+.ovt:hover{border-color:#b9c3cf}.ovt:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+.ovt[aria-current=true]{border-color:var(--navy);box-shadow:inset 0 3px 0 var(--navy)}
+.ovt .eyebrow{font-size:11px}.ovt b{font-size:26px;line-height:1.15;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.ovt small{color:var(--muted);font-size:12.5px;line-height:1.4}.ovt .go{color:var(--navy);font-size:12.5px;font-weight:500;margin-top:2px}
+.ovt.hero{grid-column:span 2;grid-row:span 2;align-content:space-between;background:var(--navy);border-color:var(--navy);color:#fff;padding:22px 24px;gap:10px}
+.ovt.hero .eyebrow,.ovt.hero small{color:#c9d6e6}.ovt.hero b{font-size:44px}.ovt.hero .go{color:#fff}
+.ovt.hero[aria-current=true]{box-shadow:0 0 0 3px #9fb6d3}
+.ovt.hero .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}.ovt.hero .chips span{font-size:12px;background:rgba(255,255,255,.12);border-radius:999px;padding:3px 10px}
+.ovt.prop{border-color:var(--debt);background:var(--debt-soft)}.ovt.prop b{color:var(--debt)}
+.ovt.muted{background:var(--grey-soft);border-style:dashed;grid-column:1/-1;grid-template-columns:auto auto 1fr auto;align-items:baseline;column-gap:14px}.ovt.muted .go{justify-self:end}.ovt.muted b{font-size:20px;color:var(--ink-2)}
+.ovbar{display:flex;height:6px;border-radius:4px;overflow:hidden;background:var(--line-2);margin-top:2px}.ovbar i{display:block}
+.crumb{all:unset;cursor:pointer;color:var(--navy);font-size:12.5px;font-weight:500;display:inline-block;margin-bottom:6px}.crumb:focus-visible{outline:2px solid var(--navy)}
+@media (max-width:900px){.ovg{grid-template-columns:repeat(2,minmax(0,1fr))}.ovt.hero{grid-row:auto}}
+@media (max-width:700px){.ovt.muted{grid-template-columns:1fr}.ovt.muted .go{justify-self:start}}@media (max-width:520px){.ovg{grid-template-columns:1fr}.ovt.hero{grid-column:auto}.ovt.hero b{font-size:36px}}`;document.head.append(st);
+  const EQ=B.filter(i=>i.cat==='Equipamentos e instrumentos');const eqN=EQ.length,bV=tot(B);
+  const eqTop=[...EQ].sort((a,b)=>b.value-a.value).slice(0,4).map(i=>i.title.replace(/\s*\(.*$/,'').slice(0,28));
+  const P=D.proposta;
+  const T=[];
+  const tile=(cls,key,eyebrow,val,sub,extra)=>{const b=el('button',{type:'button',class:'ovt '+cls,'data-k':key},el('span',{class:'eyebrow',text:eyebrow}),el('b',{class:'num',text:val}),sub?el('small',{text:sub}):null,extra||null,el('span',{class:'go',text:'Ver detalhes →'}));T.push(b);return b};
+  const hero=tile('hero','bens','Investimento da Priscila em equipamentos',brl(bV),`Equipamentos e instrumentos do estúdio, comprados com recursos da Priscila e cedidos para uso. Não são custos da IFÁ: voltam para a Priscila.`,el('div',{class:'chips'},eqTop.map(t=>el('span',{text:t}))));
+  const bar=el('div',{class:'ovbar'},el('i',{style:`width:${iP/iT*100}%;background:#2a78d6`}),el('i',{style:`width:${iA/iT*100}%;background:#eb6834`}));
+  const tiles=[hero,
+    P?tile('prop','prop','Proposta de acordo',brl(P.total),'Valor a pagar pela Ana Carolina, fora itens a apurar'):null,
+    tile('','debt','Dívida pessoal',brl(debtTotal),'Empréstimos, venda de bens e passagem aérea'),
+    tile('','ifa','Custos da IFÁ',brl(iT),`Priscila ${pct(iP/iT)} · Ana Carolina ${pct(iA/iT)}`,bar),
+    CF.length?tile('','cafe','Contrato do Projeto Café',brl(tot(CF)),'Pagos pela Priscila no contrato; fora dos custos da IFÁ'):null,
+    (D.dh_consulta&&H.length)?tile('muted','dhara','Carreira da Dhara · só consulta',brl(tot(H)),'Caráter pessoal entre Priscila e Dhara; fora deste acerto'):null].filter(Boolean);
+  const ov=el('section',{class:'ov','aria-label':'Visão geral'},el('h2',{text:'Visão geral'}),el('p',{class:'ovs',text:'Clique num número para ver as categorias e, dentro delas, cada lançamento com o comprovante.'}),el('div',{class:'ovg'},tiles));
+  const mark=k=>T.forEach(t=>t.setAttribute('aria-current',String(t.dataset.k===k)));
+  T.forEach(t=>t.onclick=()=>{const k=t.dataset.k;LOG('visão geral',k);if(k==='prop'){setTab('proposta');window.scrollTo({top:0,behavior:'smooth'});return}setMode(k);mark(k);$('l2').scrollIntoView({behavior:'smooth',block:'start'})});
+  const ap=$('tab-apur');ap.prepend(ov);
+  document.querySelector('.l1').hidden=true;['k-bens','k-cafe','k-dh'].forEach(id=>{const e=$(id);if(e)e.hidden=true});
+  const cr=el('button',{type:'button',class:'crumb',text:'← Visão geral'});cr.onclick=()=>ov.scrollIntoView({behavior:'smooth',block:'start'});
+  $('l2t').parentNode.prepend(cr);
+  mode='bens';mark('bens');
+}
 draw();
 /* ---------- contestação de valores (perfil Ana Carolina; admin vê para teste) ---------- */
 (function(){
