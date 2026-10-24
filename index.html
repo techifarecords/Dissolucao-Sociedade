@@ -505,7 +505,7 @@ function renderDash(){
   if(CF.length){const cp=tot(CF,'Priscila'),rest=P?((P.pagar.find(x=>/Café/.test(x[0]))||[])[1]||0):0;
     g.append(dbCard('Contrato do Projeto Café','Contrato de 27/05/2024 entre Priscila e Ana Carolina, fora dos custos operacionais da IFÁ.',
       hbars([{label:'Pago pela Priscila no contrato',parts:[{v:cp,c:'var(--navy)',n:'Pago'}],total:cp},{label:'Itens previstos e não realizados',parts:[{v:rest,c:'var(--debt)',n:'Não realizados'}],total:rest}],Math.max(cp,rest)),
-      el('p',{class:'dbnote',text:'A produção musical não é cobrada; a multa contratual também não.'})))}
+      el('p',{class:'dbnote',text:'A produção musical e a produção executiva não são cobradas; a multa contratual também não.'})))}
   // 3. categorias
   const cats={};I.forEach(i=>{const c=cats[i.cat]=cats[i.cat]||{P:0,A:0};c[i.payer==='Ana'?'A':'P']+=i.value});
   const cr=Object.entries(cats).map(([k,o])=>({label:k,P:o.P,A:o.A,total:o.P+o.A})).sort((a,b)=>b.total-a.total);
