@@ -699,10 +699,10 @@ if(D.strat&&SC.doc&&!D.ana){
     el('div',{class:'sgk'},Z.kpis.map((k,i)=>el('div',{class:i===0?'hi':(i===2?'lo':'')},el('span',{class:'eyebrow',text:k.l}),el('b',{class:'num',text:fv(k.v)}),el('small',{text:k.s})))),
     sec('Por que o acordo é a melhor saída para a Ana',el('div',{class:'sga'},Z.argumentos.map(([t,p])=>el('div',{},el('b',{text:t}),el('p',{text:p}))))),
     sec('Simulação: a mesma conta com correção, juros e multa',el('div',{style:'overflow-x:auto'},simT),det,el('p',{class:'dbnote',text:S.nota})),
-    sec('Contexto (relato da Priscila)',el('ul',{},Z.contexto.map(t=>el('li',{text:t})))),
+    sec('Fatos do histórico',el('ul',{},Z.contexto.map(t=>el('li',{text:t})))),
     ...Z.trechos.map(([t,qs])=>sec(t,el('div',{class:'sgq'},qs.map(fig)))),
     sec('O que pesa contra a Ana numa disputa',el('div',{class:'sgq'},Z.riscos_ana.map(([t,x])=>el('div',{},el('b',{style:'font-size:13.5px;display:block;margin-bottom:4px',text:t}),fig(x))))),
-    sec('Pontos de atenção antes da conversa',el('ul',{class:'sgx'},Z.atencao.map(t=>el('li',{text:t})))),
+    sec('Pontos que o advogado da Ana pode levantar',el('ul',{class:'sgx'},Z.atencao.map(t=>el('li',{text:t})))),
     sec('Roteiro sugerido',el('ol',{},Z.roteiro.map(t=>el('li',{text:t}))))));
 }
 /* ---------- BIG NUMBERS: visão geral da Ana ---------- */
