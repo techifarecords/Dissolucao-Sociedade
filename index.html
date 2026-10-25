@@ -688,9 +688,9 @@ if(D.strat&&SC.doc&&!D.ana){
   const tr=(c,cls)=>el('tr',{class:cls||''},c.map((v,i)=>el(i?'td':'td',{class:i?'r num':'',text:typeof v==='number'?brl(v):v})));
   const simT=el('table',{class:'tbl sgt'},el('thead',{},el('tr',{},['Grupo','Nominal (proposta)','+ IPCA','+ IPCA e juros legais','+ IPCA e 1% a.m.'].map((h,i)=>el('th',{class:i?'r':'',text:h})))),
     el('tbody',{},tr(['Dívida pessoal vencida',DL.v,DL.ipca,DL.legal,DL.um]),tr(['Restituição do Café',CF.v,CF.ipca,CF.legal,CF.um]),
-      tr(['Passagem (parcelas a vencer)',S.fl,S.fl,S.fl,S.fl]),tr(['Aluguel dos equipamentos',S.uso,S.uso,S.uso,S.uso]),tr(['Reembolso da marca',S.mar,S.mar,S.mar,S.mar]),
+      tr(['Passagem (parcelas a vencer)',S.fl,S.fl,S.fl,S.fl]),tr(['Aluguel dos equipamentos',S.uso,S.uso,S.uso,S.uso]),tr(['Reembolso da marca',S.mar,S.mar,S.mar,S.mar]),tr(['Outros reembolsos',S.out||0,S.out||0,S.out||0,S.out||0]),
       tr(['Multa do contrato do Café',0,S.mul,S.mul,S.mul]),
-      tr(['Total',S.fl+S.uso+S.mar+DL.v+CF.v,DL.ipca+CF.ipca+S.fl+S.uso+S.mar+S.mul,DL.legal+CF.legal+S.fl+S.uso+S.mar+S.mul,DL.um+CF.um+S.fl+S.uso+S.mar+S.mul],'g')));
+      tr(['Total',S.fl+S.uso+S.mar+(S.out||0)+DL.v+CF.v,DL.ipca+CF.ipca+S.fl+S.uso+S.mar+(S.out||0)+S.mul,DL.legal+CF.legal+S.fl+S.uso+S.mar+(S.out||0)+S.mul,DL.um+CF.um+S.fl+S.uso+S.mar+(S.out||0)+S.mul],'g')));
   const det=el('details',{class:'dbt'},el('summary',{text:'Ver o cálculo item a item'}),el('div',{style:'overflow-x:auto'},el('table',{class:'tbl sgt'},el('thead',{},el('tr',{},['Grupo','Data','Item','Nominal','Meses','+ IPCA','+ juros legais','+ 1% a.m.'].map((h,i)=>el('th',{class:i>2?'r':'',text:h})))),
     el('tbody',{},S.rows.map(r=>el('tr',{},[r.grupo,r.date,r.title,brl(r.v),String(r.n),brl(r.ipca),brl(r.legal),brl(r.um)].map((v,i)=>el('td',{class:i>2?'r num':'',text:v}))))))));
   pane.append(el('section',{class:'l2',style:'border:0;background:transparent'},
