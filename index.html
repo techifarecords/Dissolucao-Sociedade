@@ -723,6 +723,14 @@ if(SC.fin){
 .ovt.muted{background:var(--grey-soft);border-style:dashed;grid-column:1/-1;grid-template-columns:auto auto 1fr auto;align-items:baseline;column-gap:14px}.ovt.muted .go{justify-self:end}.ovt.muted b{font-size:20px;color:var(--ink-2)}
 .ovbar{display:flex;height:6px;border-radius:4px;overflow:hidden;background:var(--line-2);margin-top:2px}.ovbar i{display:block}
 .crumb{all:unset;cursor:pointer;color:var(--navy);font-size:12.5px;font-weight:500;display:inline-block;margin-bottom:6px}.crumb:focus-visible{outline:2px solid var(--navy)}
+.ftot{display:grid;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin-bottom:14px}
+.ftot>b{font-size:52px;line-height:1.05;letter-spacing:-.02em;font-variant-numeric:tabular-nums}.ftot>small{color:var(--muted);font-size:13px}
+.ftbar{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--line-2);margin-top:6px;gap:2px}.ftbar span{display:block;min-width:3px}
+.ftlg{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:4px}
+.ftlg button{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:10px 1fr;column-gap:8px;row-gap:1px;padding:8px 10px;border-radius:8px;border:1px solid var(--line-2)}
+.ftlg button:hover{border-color:var(--line)}.ftlg button:focus-visible{outline:2px solid var(--navy)}
+.ftlg i{width:10px;height:10px;border-radius:3px;margin-top:4px;grid-row:span 3}.ftlg span{font-size:12.5px;color:var(--ink-2)}.ftlg b{font-size:15px}.ftlg small{font-size:11.5px;color:var(--muted)}
+@media (max-width:900px){.ftlg{grid-template-columns:repeat(2,minmax(0,1fr))}.ftot>b{font-size:40px}}
 @media (max-width:900px){.ovg{grid-template-columns:repeat(2,minmax(0,1fr))}.ovt.hero{grid-row:auto}}
 @media (max-width:700px){.ovt.muted{grid-template-columns:1fr}.ovt.muted .go{justify-self:start}}@media (max-width:520px){.ovg{grid-template-columns:1fr}.ovt.hero{grid-column:auto}.ovt.hero b{font-size:36px}}`;document.head.append(st);
   const EQ=B.filter(i=>i.cat==='Equipamentos e instrumentos'&&!/^Afinação|^Bolt|^Taxa de Saque/.test(i.title));const eqN=EQ.length,bV=tot(EQ),bX=tot(B)-bV;
@@ -738,7 +746,12 @@ if(SC.fin){
     tile('','ifa','Custos operacionais da IFÁ',brl(iT),`Priscila ${pct(iP/iT)} · Ana Carolina ${pct(iA/iT)}`,bar),
     CF.length?tile('','cafe','Contrato do Projeto Café',brl(tot(CF,'Priscila')),'Valores pagos no contrato, registrados separadamente'):null,
     ((D.dh_consulta||SC.dh)&&H.length)?tile('muted','dhara',D.dh_consulta?'Carreira da Dhara · só consulta':'Carreira da Dhara · consulta',brl(tot(H)),'Caráter pessoal entre Priscila e Dhara; fora deste acerto'):null].filter(Boolean);
-  const ov=el('section',{class:'ov','aria-label':'Visão geral'},el('h2',{text:'Visão geral'}),el('p',{class:'ovs',text:'Clique num número para ver as categorias e, dentro delas, cada lançamento com o comprovante.'}),el('div',{class:'ovg'},tiles));
+  const FR=[['Equipamentos e instrumentos',tot(B),'#1f3f66','bens'],['Custos operacionais da IFÁ',iP,'#2a78d6','ifa'],['Carreira da Dhara',tot(H,'Priscila'),'#6b8fb8','dhara'],['Empréstimos e compras para a Ana',sum(DEBT.map(c=>c.orig)),'#8f3a2c','debt'],['Contrato do Projeto Café',tot(CF,'Priscila'),'#c98a00','cafe']].filter(f=>f[1]>0.005);
+  const FT=sum(FR.map(f=>f[1]));
+  const fbar=el('div',{class:'ftbar'},FR.map(([n,v,c,k])=>{const sp=el('span',{style:`width:${v/FT*100}%;background:${c}`,title:`${n}: ${brl(v)}`});return sp}));
+  const flg=el('div',{class:'ftlg'},FR.map(([n,v,c,k])=>{const b=el('button',{type:'button'},el('i',{style:'background:'+c}),el('span',{text:n}),el('b',{class:'num',text:brl(v)}),el('small',{text:pct(v/FT)}));b.onclick=()=>{LOG('visão geral','total:'+k);setMode(k);mark(k);$('l2').scrollIntoView({behavior:'smooth',block:'start'})};return b}));
+  const fban=el('section',{class:'ftot','aria-label':'Total desembolsado pela Priscila'},el('span',{class:'eyebrow',text:'Total desembolsado pela Priscila · junho de 2024 a outubro de 2026'}),el('b',{class:'num',text:brl(FT)}),el('small',{text:'Soma de tudo o que a Priscila pagou em todas as frentes registradas neste painel. Clique numa frente para ver os lançamentos e os comprovantes.'}),fbar,flg);
+  const ov=el('section',{class:'ov','aria-label':'Visão geral'},el('h2',{text:'Visão geral'}),el('p',{class:'ovs',text:'Clique num número para ver as categorias e, dentro delas, cada lançamento com o comprovante.'}),fban,el('div',{class:'ovg'},tiles));
   const mark=k=>T.forEach(t=>t.setAttribute('aria-current',String(t.dataset.k===k)));
   T.forEach(t=>t.onclick=()=>{const k=t.dataset.k;LOG('visão geral',k);if(k==='prop'){setTab('proposta');window.scrollTo({top:0,behavior:'smooth'});return}setMode(k);mark(k);$('l2').scrollIntoView({behavior:'smooth',block:'start'})});
   const ap=$('tab-apur');ap.prepend(ov);
