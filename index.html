@@ -638,7 +638,7 @@ function renderExtra(){
   const F=Object.values(D.files||{});
   if(F.length){const t=el('table',{class:'tbl'},el('tbody',{},...F.map(f=>el('tr',{},el('td',{},el('b',{text:f.t}),el('div',{class:'small muted',text:f.fn})),el('td',{class:'r'},fileBtn(f,'Baixar .xlsx','download'))))));X.append(box('Planilhas','Arquivos para conferência em Excel.',t))}
   if(SC.doc&&D.docs){const t=el('table',{class:'tbl'},el('thead',{},el('tr',{},el('th',{text:'Documento'}),el('th',{class:'hide-m',text:'Data'}),el('th',{class:'hide-m',text:'Situação'}),el('th',{class:'r',text:''}))),el('tbody',{},...D.docs.map(d=>el('tr',{},el('td',{text:d.t}),el('td',{class:'num hide-m',text:d.d}),el('td',{class:'hide-m'},el('span',{class:'pill '+(/^Assinado/.test(d.st)?'p-ok':'p-disp'),text:d.st})),el('td',{class:'r'},fileBtn(d,'Abrir PDF','view'))))));X.append(box('Contratos e documentos societários','Os arquivos abrem nesta página, com opção de baixar.',el('div',{style:'overflow-x:auto'},t)))}
-  if(SC.doc&&D.dossies){const t2=el('table',{class:'tbl'},el('thead',{},el('tr',{},el('th',{text:'Documento'}),el('th',{class:'hide-m',text:'Situação'}),el('th',{class:'r',text:''}))),el('tbody',{},...D.dossies.map(d=>el('tr',{},el('td',{text:d.t}),el('td',{class:'hide-m'},el('span',{class:'pill '+(/revis/i.test(d.st)?'p-disp':'p-ok'),text:d.st})),el('td',{class:'r'},/sheet/.test(d.m)?fileBtn(d,'Baixar','dl'):fileBtn(d,'Abrir','view'))))));X.append(box('Relatórios e dossiês para o acordo','Material de apoio para a advogada. Os arquivos abrem nesta página, com opção de baixar.',el('div',{style:'overflow-x:auto'},t2)))}
+  if(SC.doc&&D.dossies){const t2=el('table',{class:'tbl'},el('thead',{},el('tr',{},el('th',{text:'Documento'}),el('th',{class:'hide-m',text:'Situação'}),el('th',{class:'r',text:''}))),el('tbody',{},...D.dossies.map(d=>el('tr',{},el('td',{text:d.t}),el('td',{class:'hide-m'},el('span',{class:'pill '+(/revis/i.test(d.st)?'p-disp':'p-ok'),text:d.st})),el('td',{class:'r'},/sheet/.test(d.m)?fileBtn(d,'Baixar','dl'):fileBtn(d,'Abrir','view'))))));X.append(box('Relatórios e dossiês para o acordo','Material de apoio para os advogados. Os arquivos abrem nesta página, com opção de baixar.',el('div',{style:'overflow-x:auto'},t2)))}
   if(SC.adm)X.append(adminBox());
 }
 function adminBox(){
@@ -659,7 +659,7 @@ function adminBox(){
   return s}
 renderExtra();
 
-/* ---------- estratégia (somente administradora e advogada) ---------- */
+/* ---------- estratégia (somente Priscila e advogados) ---------- */
 if(D.strat&&SC.doc&&!D.ana){
   const Z=D.strat;const st=document.createElement('style');st.textContent=`
 .sg h2{margin:0 0 4px}.sg .lead{color:var(--muted);font-size:14px;margin:0 0 18px;max-width:820px}
@@ -695,7 +695,7 @@ if(D.strat&&SC.doc&&!D.ana){
     el('tbody',{},S.rows.map(r=>el('tr',{},[r.grupo,r.date,r.title,brl(r.v),String(r.n),brl(r.ipca),brl(r.legal),brl(r.um)].map((v,i)=>el('td',{class:i>2?'r num':'',text:v}))))))));
   pane.append(el('section',{class:'l2',style:'border:0;background:transparent'},
     el('h2',{text:'Estratégia para a negociação'}),el('p',{class:'lead',text:Z.objetivo}),
-    el('div',{class:'warnbar',text:'Uso interno da advogada e da Priscila. Esta página não aparece para a Ana Carolina e não deve ser enviada à outra parte.'}),
+    el('div',{class:'warnbar',text:'Uso interno dos advogados e da Priscila. Esta página não aparece para a Ana Carolina e não deve ser enviada à outra parte.'}),
     el('div',{class:'sgk'},Z.kpis.map((k,i)=>el('div',{class:i===0?'hi':(i===2?'lo':'')},el('span',{class:'eyebrow',text:k.l}),el('b',{class:'num',text:fv(k.v)}),el('small',{text:k.s})))),
     sec('Por que o acordo é a melhor saída para a Ana',el('div',{class:'sga'},Z.argumentos.map(([t,p])=>el('div',{},el('b',{text:t}),el('p',{text:p}))))),
     sec('Simulação: a mesma conta com correção, juros e multa',el('div',{style:'overflow-x:auto'},simT),det,el('p',{class:'dbnote',text:S.nota})),
@@ -801,7 +801,7 @@ const form=el('form',{class:'ctform',novalidate:''},
   boxC,boxI,fld('Comentário',com),
   fld('Comprovante',file,'PDF ou imagem, até 3 arquivos de 10 MB cada.'),
   el('div',{class:'ctact'},btn,msg));
-pane.append(el('section',{class:'l2'},el('div',{class:'head'},el('div',{},el('h2',{text:'Contestar ou incluir valores'}),el('p',{class:'sub',text:'Cada envio gera um protocolo e fica registrado com o comprovante para análise das advogadas.'})))),form,sent);
+pane.append(el('section',{class:'l2'},el('div',{class:'head'},el('div',{},el('h2',{text:'Contestar ou incluir valores'}),el('p',{class:'sub',text:'Cada envio gera um protocolo e fica registrado com o comprovante para análise dos advogados.'})))),form,sent);
 if(!CT.u||window.AS_VIEW){btn.disabled=true;msg.textContent=window.AS_VIEW?'Modo de visualização da administradora: o envio fica desativado.':'O envio ainda não está ativo. Tente novamente mais tarde.'}
 const sync=()=>{const inc=tI.checked;boxC.hidden=inc;boxI.hidden=!inc};tC.onchange=sync;tI.onchange=sync;
 const num=s=>{s=String(s||'').trim();if(!s)return null;s=s.replace(/[^\d,.-]/g,'');if(s.includes(','))s=s.replace(/\./g,'').replace(',','.');const n=parseFloat(s);return isNaN(n)?NaN:n};
@@ -837,7 +837,7 @@ form.addEventListener('submit',async e=>{e.preventDefault();msg.className='ctmsg
 });
 })();
 
-/* ---------- resumo das contestações (perfis administradora e advogada) ---------- */
+/* ---------- resumo das contestações (perfis Priscila e advogados) ---------- */
 (function(){
 if(!(D.scope&&D.scope.doc)||!D.contest_r)return;
 const U=(D.contest||{}).u||'';
