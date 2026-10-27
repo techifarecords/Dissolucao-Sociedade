@@ -705,6 +705,26 @@ if(D.strat&&SC.doc&&!D.ana){
     sec('Pontos que o advogado da Ana pode levantar',el('ul',{class:'sgx'},Z.atencao.map(t=>el('li',{text:t})))),
     sec('Roteiro sugerido',el('ol',{},Z.roteiro.map(t=>el('li',{text:t}))))));
 }
+
+/* ---------- prévia de material para a Ana (validação: só Priscila e advogados) ---------- */
+if(D.preview&&SC.doc&&!D.ana){
+  const Z=D.preview;const nav=$('tabs');
+  const tb=el('button',{role:'tab',id:'t-pv','aria-selected':'false','aria-controls':'tab-pv',text:'Prévia para a Ana'});nav.append(tb);
+  const pane=el('div',{id:'tab-pv',role:'tabpanel',class:'sg',hidden:true});$('tab-dl').after(pane);
+  TABS.previa=['t-pv','tab-pv'];tb.onclick=()=>{setTab('previa');LOG('view','Prévia para a Ana')};
+  const au=el('audio',{controls:'',preload:'none',style:'width:100%;max-width:520px'});
+  window.blobFor(Z.audio.key).then(u=>{au.src=u}).catch(()=>{au.replaceWith(el('p',{class:'small muted',text:'Áudio indisponível.'}))});
+  const dlb=el('button',{type:'button',class:'fbtn',text:'Baixar áudio'});dlb.onclick=()=>{window.blobFor(Z.audio.key).then(u=>{const a=el('a',{href:u,download:Z.audio.fn});document.body.append(a);a.click();a.remove()})};
+  const sec=(t,...c)=>el('section',{class:'sgs'},el('h3',{text:t}),...c);
+  const msg=m=>el('figure',{class:m[1]==='Priscila'?'pri':'ana'},el('blockquote',{style:'white-space:pre-wrap',text:m[2]}),el('figcaption',{text:'24/03/2026 · '+m[0]+' · '+m[1]}));
+  pane.append(el('section',{class:'l2',style:'border:0;background:transparent'},
+    el('h2',{text:Z.titulo}),el('div',{class:'warnbar',text:Z.status}),
+    sec('Áudio',el('p',{class:'small',style:'margin:0 0 10px;color:var(--ink-2)',text:Z.audio.desc}),au,el('div',{style:'margin-top:8px'},dlb)),
+    sec('Transcrição',el('div',{class:'sgq'},Z.transcricao.map(([t,x])=>el('figure',{class:'ana'},el('blockquote',{text:x}),el('figcaption',{text:'Áudio · '+t})))),el('p',{class:'dbnote',text:Z.nota_transcricao})),
+    ...Z.blocos.map(b=>sec('Trecho da conversa: '+b.titulo,el('div',{class:'sgq'},b.msgs.map(msg)))),
+    sec('O que estes trechos mostram',el('ul',{},Z.pontos.map(t=>el('li',{text:t})))),
+    sec('Partes da conversa deixadas de fora',el('ul',{class:'sgx'},Z.fora.map(t=>el('li',{text:t}))))));
+}
 /* ---------- BIG NUMBERS: visão geral (perfis com apuração) ---------- */
 if(SC.fin){
   const st=document.createElement('style');st.textContent=`
@@ -957,7 +977,7 @@ async function unlock(me,first){const b=document.getElementById('gb'),er=documen
     D={generated:META.generated,items:[],loans:[],flight:[],repay:[],imap:{},files:{},docs:null,log:ME.log||null};let IA=null,LF=null,IDH=null;const BL={};
     for(const[s,k]of Object.entries(ME.k)){KS[s]=await crypto.subtle.importKey('raw',ub(k),'AES-GCM',false,['decrypt']);
       const o=JSON.parse(new TextDecoder().decode(await dec(s,await (await fetch('r/'+P[s]+'?v='+Date.now(),{cache:'no-store'})).arrayBuffer())));
-      if(o.generated)D.generated=o.generated;D.items.push(...(o.items||[]));if(o.loans){D.loans=o.loans;D.flight=o.flight;D.repay=o.repay}Object.assign(D.imap,o.imap||{});D.chats=Object.assign(D.chats||{},o.chats||{});Object.assign(D.files,o.files||{});if(o.docs)D.docs=o.docs;if(o.dossies)D.dossies=o.dossies;if(o.items_ana)IA=o.items_ana;if(o.items_dh_ana)IDH=o.items_dh_ana;if(o.loans_full)LF=o.loans_full;if(o.contest)D.contest=o.contest;if(o.contest_r)D.contest_r=o.contest_r;if(o.strat)D.strat=o.strat;if(o.blobs)BL[s]=o.blobs;if(o.proposta&&(!D.proposta||s==='doc'))D.proposta=o.proposta}
+      if(o.generated)D.generated=o.generated;D.items.push(...(o.items||[]));if(o.loans){D.loans=o.loans;D.flight=o.flight;D.repay=o.repay}Object.assign(D.imap,o.imap||{});D.chats=Object.assign(D.chats||{},o.chats||{});Object.assign(D.files,o.files||{});if(o.docs)D.docs=o.docs;if(o.dossies)D.dossies=o.dossies;if(o.items_ana)IA=o.items_ana;if(o.items_dh_ana)IDH=o.items_dh_ana;if(o.loans_full)LF=o.loans_full;if(o.contest)D.contest=o.contest;if(o.contest_r)D.contest_r=o.contest_r;if(o.strat)D.strat=o.strat;if(o.preview)D.preview=o.preview;if(o.blobs)BL[s]=o.blobs;if(o.proposta&&(!D.proposta||s==='doc'))D.proposta=o.proposta}
     if(LF){D.loans=LF.loans;D.flight=LF.flight;D.repay=LF.repay}
     if(!ME.k.ifa&&IA){D.items.push(...IA);D.ana=true}
     if(!ME.k.dh&&D.ana&&IDH){D.items.push(...IDH);D.dh_consulta=true}
