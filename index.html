@@ -718,7 +718,7 @@ if(D.strat&&SC.doc&&!D.ana){
 }
 
 /* ---------- prévia de material para a Ana (validação: só Priscila e advogados) ---------- */
-if(D.preview&&SC.doc&&!D.ana){
+if(D.preview&&SC.debt){
   const Z=D.preview;const nav=$('tabs');
   const tb=el('button',{role:'tab',id:'t-pv','aria-selected':'false','aria-controls':'tab-pv',text:'Saldo projeto Café'});nav.append(tb);
   const pane=el('div',{id:'tab-pv',role:'tabpanel',class:'sg',hidden:true});$('tab-dl').after(pane);
@@ -733,7 +733,7 @@ if(D.preview&&SC.doc&&!D.ana){
   const ksec=K?sec('Contrato assinado do Projeto Café',el('p',{class:'small',style:'margin:0 0 10px;color:var(--ink-2)',text:K.desc}),el('div',{style:'display:flex;gap:8px;flex-wrap:wrap'},ob('Abrir contrato (PDF)',0),ob('Baixar contrato',1)),el('p',{class:'dbnote',text:K.aviso})):null;
   const A=Z.argumento,asec=A?sec(A.titulo,el('ol',{},A.itens.map(t=>el('li',{text:t})))):null;
   pane.append(el('section',{class:'l2',style:'border:0;background:transparent'},
-    el('h2',{text:Z.titulo}),el('div',{class:'warnbar',text:Z.status}),asec,ksec,
+    el('h2',{text:Z.titulo}),Z.status?el('div',{class:'warnbar',text:Z.status}):null,asec,ksec,
     sec('Áudio',el('p',{class:'small',style:'margin:0 0 10px;color:var(--ink-2)',text:Z.audio.desc}),au,el('div',{style:'margin-top:8px'},dlb)),
     sec('Transcrição',el('div',{class:'sgq chat'},Z.transcricao.map(([t,x],i)=>el('figure',{class:i?'ana cont':'ana'},el('blockquote',{text:x}),el('figcaption',{text:'áudio · '+t})))),el('p',{class:'dbnote',text:Z.nota_transcricao})),
     ...Z.blocos.map(b=>sec('Trecho da conversa: '+b.titulo,chat(b.msgs))),
