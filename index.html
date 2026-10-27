@@ -722,8 +722,7 @@ if(D.preview&&SC.doc&&!D.ana){
     sec('Áudio',el('p',{class:'small',style:'margin:0 0 10px;color:var(--ink-2)',text:Z.audio.desc}),au,el('div',{style:'margin-top:8px'},dlb)),
     sec('Transcrição',el('div',{class:'sgq'},Z.transcricao.map(([t,x])=>el('figure',{class:'ana'},el('blockquote',{text:x}),el('figcaption',{text:'Áudio · '+t})))),el('p',{class:'dbnote',text:Z.nota_transcricao})),
     ...Z.blocos.map(b=>sec('Trecho da conversa: '+b.titulo,el('div',{class:'sgq'},b.msgs.map(msg)))),
-    sec('O que estes trechos mostram',el('ul',{},Z.pontos.map(t=>el('li',{text:t})))),
-    sec('Partes da conversa deixadas de fora',el('ul',{class:'sgx'},Z.fora.map(t=>el('li',{text:t}))))));
+    sec('O que estes trechos mostram',el('ul',{},Z.pontos.map(t=>el('li',{text:t}))))));
 }
 /* ---------- BIG NUMBERS: visão geral (perfis com apuração) ---------- */
 if(SC.fin){
