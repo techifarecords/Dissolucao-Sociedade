@@ -673,8 +673,18 @@ if(D.strat&&SC.doc&&!D.ana){
 .sga{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.sga div{border-left:3px solid var(--navy);padding:2px 0 2px 12px}.sga b{display:block;font-size:14px;margin-bottom:2px}.sga p{margin:0;font-size:13.5px;color:var(--ink-2)}
 .sgq{display:grid;gap:10px}.sgq figure{margin:0;padding:10px 14px;border-radius:8px;background:var(--surface-2);border:1px solid var(--line-2)}
 .sgq blockquote{margin:0;font-size:14px}.sgq figcaption{font-size:12px;color:var(--muted);margin-top:4px}
-.sgq .ana blockquote::before{content:'Ana · ';font-weight:600;color:var(--debt)}.sgq .pri blockquote::before{content:'Priscila · ';font-weight:600;color:var(--navy)}
+.sgq .ana blockquote::before{content:'Ana Carolina · ';font-weight:600;color:var(--debt)}.sgq .pri blockquote::before{content:'Priscila · ';font-weight:600;color:var(--navy)}
 .sgq .cafe blockquote::before{content:'Café · ';font-weight:600;color:#9a6a00}
+.sgq.chat{display:flex;flex-direction:column;gap:4px;padding:14px 12px;border-radius:12px;background:color-mix(in srgb,var(--line-2) 55%,var(--surface))}
+.sgq.chat figure{max-width:min(78%,560px);align-self:flex-start;background:var(--surface);border:0;border-radius:4px 14px 14px 14px;padding:7px 11px 5px;box-shadow:0 1px 1px rgba(0,0,0,.06)}
+.sgq.chat figure.pri{align-self:flex-end;background:color-mix(in srgb,var(--navy) 14%,var(--surface));border-radius:14px 4px 14px 14px}
+.sgq.chat blockquote{font-size:14px;line-height:1.4}.sgq.chat blockquote::before{display:block;font-size:12px;margin-bottom:1px}
+.sgq.chat .pri blockquote::before,.sgq.chat .cont blockquote::before{content:none}
+.sgq.chat .ana blockquote::before{content:'Ana Carolina'}.sgq.chat .cafe blockquote::before{content:'Café'}
+.sgq.chat figure.cont blockquote::before{content:none}.sgq.chat figure.cont{margin-top:-1px}
+.sgq.chat figcaption{text-align:right;font-size:11px;margin-top:2px}
+.sgq.chat .dchip{align-self:center;font-size:11.5px;color:var(--ink-2);background:var(--surface);border-radius:8px;padding:3px 10px;margin:8px 0 4px;box-shadow:0 1px 1px rgba(0,0,0,.05)}
+.sgq.chat figure+figure.pri,.sgq.chat figure.pri+figure:not(.pri){margin-top:4px}
 .sgt td,.sgt th{font-size:13px}.sgt .g td{font-weight:600;background:var(--surface-2)}
 .sgx li{color:var(--ink-2)}
 @media (max-width:900px){.sgk{grid-template-columns:repeat(2,minmax(0,1fr))}.sga{grid-template-columns:1fr}}@media (max-width:520px){.sgk{grid-template-columns:1fr}}`;document.head.append(st);
@@ -717,15 +727,16 @@ if(D.preview&&SC.doc&&!D.ana){
   window.blobFor(Z.audio.key).then(u=>{au.src=u}).catch(()=>{au.replaceWith(el('p',{class:'small muted',text:'Áudio indisponível.'}))});
   const dlb=el('button',{type:'button',class:'fbtn',text:'Baixar áudio'});dlb.onclick=()=>{window.blobFor(Z.audio.key).then(u=>{const a=el('a',{href:u,download:Z.audio.fn});document.body.append(a);a.click();a.remove()})};
   const sec=(t,...c)=>el('section',{class:'sgs'},el('h3',{text:t}),...c);
-  const msg=m=>el('figure',{class:m[1]==='Priscila'?'pri':(/Café/.test(m[1])?'cafe':'ana')},el('blockquote',{style:'white-space:pre-wrap',text:m[2]}),el('figcaption',{text:(m[3]||'24/03/2026')+' · '+m[0]+' · '+m[1]}));
+  const msg=m=>el('figure',{class:m[1]==='Priscila'?'pri':(/Café/.test(m[1])?'cafe':'ana')},el('blockquote',{style:'white-space:pre-wrap',text:m[2]}),el('figcaption',{text:m[0]}));
+  const chat=L=>{let d0='';const o=[];let a0='';L.forEach(m=>{const d=m[3]||'24/03/2026';if(d!==d0){o.push(el('div',{class:'dchip',text:d}));d0=d;a0=''}const f=msg(m);if(m[1]===a0)f.classList.add('cont');a0=m[1];o.push(f)});return el('div',{class:'sgq chat'},o)};
   const K=Z.contrato,ob=(t,dl)=>{const b=el('button',{type:'button',class:'fbtn',text:t});b.onclick=()=>{LOG(dl?'download':'view','Contrato Café assinado');window.blobFor(K.key).then(u=>{if(dl){const a=el('a',{href:u,download:K.fn});document.body.append(a);a.click();a.remove()}else window.open(u,'_blank')})};return b};
   const ksec=K?sec('Contrato assinado do Projeto Café',el('p',{class:'small',style:'margin:0 0 10px;color:var(--ink-2)',text:K.desc}),el('div',{style:'display:flex;gap:8px;flex-wrap:wrap'},ob('Abrir contrato (PDF)',0),ob('Baixar contrato',1)),el('p',{class:'dbnote',text:K.aviso})):null;
   const A=Z.argumento,asec=A?sec(A.titulo,el('ol',{},A.itens.map(t=>el('li',{text:t})))):null;
   pane.append(el('section',{class:'l2',style:'border:0;background:transparent'},
     el('h2',{text:Z.titulo}),el('div',{class:'warnbar',text:Z.status}),asec,ksec,
     sec('Áudio',el('p',{class:'small',style:'margin:0 0 10px;color:var(--ink-2)',text:Z.audio.desc}),au,el('div',{style:'margin-top:8px'},dlb)),
-    sec('Transcrição',el('div',{class:'sgq'},Z.transcricao.map(([t,x])=>el('figure',{class:'ana'},el('blockquote',{text:x}),el('figcaption',{text:'Áudio · '+t})))),el('p',{class:'dbnote',text:Z.nota_transcricao})),
-    ...Z.blocos.map(b=>sec('Trecho da conversa: '+b.titulo,el('div',{class:'sgq'},b.msgs.map(msg)))),
+    sec('Transcrição',el('div',{class:'sgq chat'},Z.transcricao.map(([t,x],i)=>el('figure',{class:i?'ana cont':'ana'},el('blockquote',{text:x}),el('figcaption',{text:'áudio · '+t})))),el('p',{class:'dbnote',text:Z.nota_transcricao})),
+    ...Z.blocos.map(b=>sec('Trecho da conversa: '+b.titulo,chat(b.msgs))),
     sec('O que estes trechos mostram',el('ul',{},Z.pontos.map(t=>el('li',{text:t}))))));
 }
 /* ---------- BIG NUMBERS: visão geral (perfis com apuração) ---------- */
