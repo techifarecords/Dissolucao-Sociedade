@@ -709,9 +709,9 @@ if(D.strat&&SC.doc&&!D.ana){
 /* ---------- prévia de material para a Ana (validação: só Priscila e advogados) ---------- */
 if(D.preview&&SC.doc&&!D.ana){
   const Z=D.preview;const nav=$('tabs');
-  const tb=el('button',{role:'tab',id:'t-pv','aria-selected':'false','aria-controls':'tab-pv',text:'Prévia para a Ana'});nav.append(tb);
+  const tb=el('button',{role:'tab',id:'t-pv','aria-selected':'false','aria-controls':'tab-pv',text:'Saldo projeto Café'});nav.append(tb);
   const pane=el('div',{id:'tab-pv',role:'tabpanel',class:'sg',hidden:true});$('tab-dl').after(pane);
-  TABS.previa=['t-pv','tab-pv'];tb.onclick=()=>{setTab('previa');LOG('view','Prévia para a Ana')};
+  TABS.previa=['t-pv','tab-pv'];tb.onclick=()=>{setTab('previa');LOG('view','Saldo projeto Café')};
   const au=el('audio',{controls:'',preload:'none',style:'width:100%;max-width:520px'});
   window.blobFor(Z.audio.key).then(u=>{au.src=u}).catch(()=>{au.replaceWith(el('p',{class:'small muted',text:'Áudio indisponível.'}))});
   const dlb=el('button',{type:'button',class:'fbtn',text:'Baixar áudio'});dlb.onclick=()=>{window.blobFor(Z.audio.key).then(u=>{const a=el('a',{href:u,download:Z.audio.fn});document.body.append(a);a.click();a.remove()})};
